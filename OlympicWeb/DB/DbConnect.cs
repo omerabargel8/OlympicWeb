@@ -23,7 +23,7 @@ namespace OlympicWeb.DB
         private void Initialize()
         {
 
-            string connectionString = "Server=127.0.0.1;Database=olympicapp;User Id=root;Password=***";
+            string connectionString = "Server=127.0.0.1;Database=olympicapp;User Id=root;Password=2691995";
 
             connection = new MySqlConnection(connectionString);
         }
