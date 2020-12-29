@@ -20,11 +20,13 @@ namespace OlympicWeb.Controllers
         }
         // GET: api/Feed
         [HttpGet]
-        public string Get()
+        public List<Post> Get()
         {
             //return manager.getPosts();
 
-            return manager.GetBestAthlete();
+            List<Post> b =  manager.getPosts();
+            Console.WriteLine("blaa");
+            return b;
             
         }
 

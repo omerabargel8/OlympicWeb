@@ -7,7 +7,7 @@ namespace OlympicWeb.Models
 {
     public interface IAppManager
     {
-        List<Post>[] getPosts();
+        List<Post> getPosts();
         string GetBestAthlete();
     }
 }

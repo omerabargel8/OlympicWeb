@@ -15,16 +15,13 @@ namespace OlympicWeb.Models
             DbConnect.OpenConnection();
         }
 
-        public List<Post>[] getPosts()
-        { 
-            Post p = new Post { PostId = 12, Content = "hello", Likes = 3 };
-            List<Post>[] posts = new List<Post>[10];
-            posts[0].Add(p);
-            return posts;
+        public List<Post> getPosts()
+        {
+            return DbConnect.FeedPosts();
         }
         public string GetBestAthlete()
         {
-            string table = "olympic_app.athletes";
+            string table = "olympicapp.athletes";
             List<string> atributes = new List<string>();
             atributes.Add("Athlete_id");
             atributes.Add("Name");

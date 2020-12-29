@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Data.SqlClient;
 using MySql.Data;
 using MySql.Data.MySqlClient;
+using OlympicWeb.Models;
 
 namespace OlympicWeb.DB
 {
@@ -22,7 +23,7 @@ namespace OlympicWeb.DB
         private void Initialize()
         {
 
-            string connectionString = "Server=127.0.0.1;Database=olympic_app;User Id=root;Password=***";
+            string connectionString = "Server=127.0.0.1;Database=olympicapp;User Id=root;Password=***";
 
             connection = new MySqlConnection(connectionString);
         }
@@ -66,7 +67,7 @@ namespace OlympicWeb.DB
             list[0] = new List<string>();
             list[1] = new List<string>();
 
-            var queryString = "SELECT Athlete_Id,Name FROM olympic_app.athletes";
+            var queryString = "SELECT Athlete_Id,Name FROM olympicapp.athletes";
             MySqlCommand cmd = new MySqlCommand(queryString, connection);
             dataReader = cmd.ExecuteReader();
 
@@ -122,12 +123,14 @@ namespace OlympicWeb.DB
         }
 
 
-        public List<string>[] FeedPosts()
+        public List<Post> FeedPosts()
         {
 
-            List<string>[] posts = new List<string>[2];
-            posts[0].Add(TheBestAthlete("Basketball"));
-            posts[0].Add(TheBestAthlete("Swimming"));
+            Post p1 = new Post { PostId = 12, Content = TheBestAthlete("Basketball"), Likes = 3 };
+            Post p2 = new Post { PostId = 13, Content = TheBestAthlete("Swimming"), Likes = 13 };
+            List<Post> posts = new List<Post>();
+            posts.Add(p1);
+            posts.Add(p2);
             return posts;
 
         }
@@ -138,9 +141,9 @@ namespace OlympicWeb.DB
         public string TheBestAthlete(string sport)
         {
 
-            var queryString = "SELECT Name FROM olympic_app.athletes WHERE Athlete_Id = (SELECT Athlete_Id FROM (" +
-            "SELECT Athlete_Id, COUNT(*) AS magnitude FROM (SELECT Athlete_Id, Medal FROM olympic_app.medals WHERE ((event_id IN " +
-            "(SELECT event_id FROM olympic_app.event_types WHERE sport = \"" + sport + "\"" + ")) AND  medal <> \"NA\")) AS temp " +
+            var queryString = "SELECT Name FROM olympicapp.athletes WHERE Athlete_Id = (SELECT Athlete_Id FROM (" +
+            "SELECT Athlete_Id, COUNT(*) AS magnitude FROM (SELECT Athlete_Id, Medal FROM olympicapp.medals WHERE ((event_id IN " +
+            "(SELECT event_id FROM olympicapp.event_types WHERE sport = \"" + sport + "\"" + ")) AND  medal <> \"NA\")) AS temp " +
             "GROUP BY Athlete_Id " +
              "ORDER BY magnitude DESC " +
             "LIMIT 1) AS temp2);";
