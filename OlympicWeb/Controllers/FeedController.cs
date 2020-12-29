@@ -22,11 +22,9 @@ namespace OlympicWeb.Controllers
         [HttpGet]
         public List<Post> Get()
         {
-            //return manager.getPosts();
-
-            List<Post> b =  manager.getPosts();
-            Console.WriteLine("blaa");
-            return b;
+            //List<Post> b =  manager.getPosts();
+            //Console.WriteLine("blaa");
+            return manager.getPosts();
             
         }
 
