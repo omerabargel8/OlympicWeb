@@ -128,9 +128,15 @@ namespace OlympicWeb.DB
 
             Post p1 = new Post { PostId = 12, Content = TheBestAthlete("Basketball"), Likes = 3 };
             Post p2 = new Post { PostId = 13, Content = TheBestAthlete("Swimming"), Likes = 13 };
+            Post p3 = new Post { PostId = 14, Content = TheBestAthlete("Football"), Likes = 1 };
+            Post p4 = new Post { PostId = 15, Content = TheBestAthlete("Judo"), Likes = 10 };
+            Post p5 = new Post { PostId = 16, Content = TheBestAthlete("Luge"), Likes = 10 };
             List<Post> posts = new List<Post>();
             posts.Add(p1);
             posts.Add(p2);
+            posts.Add(p3);
+            posts.Add(p4);
+            posts.Add(p5);
             return posts;
 
         }
