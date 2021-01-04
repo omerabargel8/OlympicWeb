@@ -32,6 +32,7 @@ namespace OlympicWeb.Controllers
         [ActionName("sign_up")]
         public bool SignupPost(User user)
         {
+            Console.WriteLine("BLAAAAAAAAAAAAAAAAAA");
             return manager.UserSignup(user.Username, user.Password);
         }
         [HttpPost]
