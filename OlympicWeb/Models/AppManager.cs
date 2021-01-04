@@ -8,28 +8,41 @@ namespace OlympicWeb.Models
 {
     public class AppManager : IAppManager
     {
-        private DBConnect DbConnect;
+        private DBConnect dBConnect;
+
         public AppManager()
         {
-            this.DbConnect = new DBConnect();
-            DbConnect.OpenConnection();
+            dBConnect = new DBConnect();
+            dBConnect.OpenConnection();
         }
-
         public List<Post> getPosts()
         {
-            return DbConnect.FeedPosts();
+            List<Post> list = dBConnect.FeedPosts();
+            return list;
         }
-        public string GetBestAthlete()
+
+        public bool UserLogin(string username, string password)
         {
-            string table = "olympicapp.athletes";
-            List<string> atributes = new List<string>();
-            atributes.Add("Athlete_id");
-            atributes.Add("Name");
-            atributes.Add("Team");
-            List<string>[] filter_list = DbConnect.BasicFilter(table, atributes);
-            string name = DbConnect.TheBestAthlete("Basketball");
-            Console.WriteLine(name);
-            return name;
+            return dBConnect.Login(username, password);
+        }
+        public bool UserSignup(string username, string password)
+        {
+            return dBConnect.NewUserRegister(username, password);
+        }
+
+        public bool LikePost(string username, int post_id)
+        {
+            return dBConnect.LikePost(username, post_id);
+        }
+
+        public bool DeleteUser(string username, string password, bool isAdmin)
+        {
+            return dBConnect.DeleteUser(username, password, isAdmin);
+        }
+        public bool ChangePassword(string username, string password)
+        {
+            return dBConnect.ChangePassword(username, password);
+
         }
     }
 }

@@ -22,10 +22,7 @@ namespace OlympicWeb.Controllers
         [HttpGet]
         public List<Post> Get()
         {
-            //List<Post> b =  manager.getPosts();
-            //Console.WriteLine("blaa");
             return manager.getPosts();
-            
         }
 
         // GET: api/Feed/5
@@ -37,19 +34,13 @@ namespace OlympicWeb.Controllers
 
         // POST: api/Feed
         [HttpPost]
-        public void Post([FromBody] string value)
+        public void Post(string username, int post_id)
         {
         }
 
         // PUT: api/Feed/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
         {
         }
     }
