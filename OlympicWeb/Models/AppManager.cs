@@ -21,6 +21,12 @@ namespace OlympicWeb.Models
             return list;
         }
 
+        public List<Question> GetQuestions(string sport)
+        {
+            return dBConnect.GetQuestions(sport);
+        }
+
+
         public bool UserLogin(string username, string password)
         {
             return dBConnect.Login(username, password);
@@ -44,5 +50,6 @@ namespace OlympicWeb.Models
             return dBConnect.ChangePassword(username, password);
 
         }
+
     }
 }

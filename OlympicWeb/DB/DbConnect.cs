@@ -13,8 +13,9 @@ namespace OlympicWeb.DB
     {
         private MySqlConnection connection;
         private MySqlDataReader dataReader;
-
         private List<string> sportsList = new List<string>();
+        private List<string> gamesList = new List<string>();
+
         //Constructor
         public DBConnect()
         {
@@ -24,9 +25,7 @@ namespace OlympicWeb.DB
         //Initialize values
         private void Initialize()
         {
-
             string connectionString = "Server=127.0.0.1;Database=olympicapp;User Id=root;Password=6u6fwn8S9";
-
             connection = new MySqlConnection(connectionString);
         }
 
@@ -36,6 +35,8 @@ namespace OlympicWeb.DB
             try
             {
                 connection.Open();
+                sportsList = SelectColFromTable("Sport", "event_types");
+                gamesList = SelectColFromTable("Game", "olympic_games");
                 return true;
             }
             catch (MySqlException ex)
@@ -127,27 +128,7 @@ namespace OlympicWeb.DB
         public List<string> GeneratePosts()
         {
             List<string> posts = new List<string>();
-            List<string> temp = new List<string>();
-            //populating list of sports only once
-            if (sportsList.Count == 0)
-            {
-                string query = "SELECT DISTINCT Sport FROM olympicapp.event_types;";
-                MySqlCommand cmd = new MySqlCommand(query, connection);
-                List<string> sports = new List<string>();
-                dataReader = cmd.ExecuteReader();
-
-                //Read the data and store the name in string
-                while (dataReader.Read())
-                {
-                    sports.Add(dataReader["Sport"] + "");
-
-                }
-                //close Data Reader
-                dataReader.Close();
-
-                sportsList = sports;
-
-            }
+            List<List<string>> temp = new List<List<string>>();
             // choosing a random sport
             int numberOfPosts = 1;
             for (int i = 0; i < numberOfPosts; i++)
@@ -156,26 +137,10 @@ namespace OlympicWeb.DB
                 int index = random.Next(sportsList.Count);
                 string sport = sportsList[index];
                 string result = "The best athlete in the field of " + sport + " is ";
-                result += TheBestAthlete(sport);
+                result += TheBestXAthlete(sport, " AND  medal <> \"NA\"")[0];
                 result += ".\n The best athlete is the athlete who won the most medals.";
                 posts.Add(result);
                 InsertIntoFeedTable(result, sport);
-                /**
-                index = random.Next(sportsList.Count);
-                sport = sportsList[index];
-                result = "Did you know that the oldest athlete in the field of " + sport + " is "; 
-                temp = TheMostXAthlete(sport,"Birth_year","ASC");
-                result += temp[0] + ".";
-                posts.Add(result);
-                
-                index = random.Next(sportsList.Count);
-                sport = sportsList[index];
-                result = "Did you know that the youngest athlete in the field of " + sport + " is ";
-                temp= TheMostXAthlete(sport,"Birth_year","DESC");
-                result += temp[0] + ".";
-                posts.Add(result);
-                */
-
                 index = random.Next(sportsList.Count);
                 sport = sportsList[index];
                 result = "Did you know that the fatest athlete in the field of " + sport + " is ";
@@ -194,7 +159,7 @@ namespace OlympicWeb.DB
                 if (temp.Count > 0)
                 {
 
-                    result += temp[0] + "?\n This athlete weight is " + temp[1] + ".";
+                    result += temp[0][0] + "?\n This athlete weight is " + temp[0][1] + ".";
                     posts.Add(result);
                     InsertIntoFeedTable(result, sport);
                 }
@@ -204,7 +169,7 @@ namespace OlympicWeb.DB
                 temp = TheMostXAthlete(sport, "Height", "ASC");
                 if (temp.Count > 0)
                 {
-                    result += temp[0] + "?\n This athlete height is " + temp[1] + ".";
+                    result += temp[0][0] + "?\n This athlete height is " + temp[0][1] + ".";
                     posts.Add(result);
                     InsertIntoFeedTable(result, sport);
                 }
@@ -214,7 +179,7 @@ namespace OlympicWeb.DB
                 temp = TheMostXAthlete(sport, "Height", "DESC");
                 if (temp.Count > 0)
                 {
-                    result += temp[0] + "?\n This athlete height is " + temp[1] + ".";
+                    result += temp[0][0] + "?\n This athlete height is " + temp[0][1] + ".";
                     posts.Add(result);
                     InsertIntoFeedTable(result, sport);
                 }
@@ -239,24 +204,24 @@ namespace OlympicWeb.DB
             dataReader.Close();
 
         }
-        public void SportList()
+
+        public List<string> SelectColFromTable(string col, string table)
         {
-            string query = "SELECT DISTINCT Sport FROM olympicapp.event_types;";
+            string query = "SELECT DISTINCT " + col + " FROM olympicapp." + table + ";";
             MySqlCommand cmd = new MySqlCommand(query, connection);
-            List<string> sports = new List<string>();
+            List<string> result = new List<string>();
             dataReader = cmd.ExecuteReader();
 
             //Read the data and store the name in string
             while (dataReader.Read())
             {
-                sports.Add(dataReader["Sport"] + "");
+                result.Add(dataReader[col] + "");
 
             }
             //close Data Reader
             dataReader.Close();
 
-            sportsList = sports;
-
+            return result;
         }
 
         public List<Post> FeedPosts()
@@ -284,24 +249,23 @@ namespace OlympicWeb.DB
         }
 
         // queries for feed  
-        public List<string> TheMostXAthlete(string sport, string parameter, string order)
+        public List<List<string>> TheMostXAthlete(string sport, string parameter, string order)
         {
 
             var queryString = "SELECT Name," + parameter + " FROM" +
-           "(SELECT Athlete_id, Name, " + parameter + " FROM " +
-           "(SELECT Athlete_id, Name, " + parameter + " FROM olympicapp.athletes AS temp WHERE Athlete_id IN " +
-           "(SELECT Athlete_Id FROM olympicapp.medals WHERE (event_id IN " +
-           "(SELECT event_id FROM olympicapp.event_types WHERE sport = \"" + sport + "\"" + "))" +
-           "GROUP BY Athlete_Id) AND " + parameter + " <> \"NA\") AS temp2 ORDER BY " + parameter + " " + order + " LIMIT 1) AS temp3;";
-            List<string> result = new List<string>();
+            "(SELECT Athlete_id, Name, " + parameter + " FROM " +
+            "(SELECT Athlete_id, Name, " + parameter + " FROM olympicapp.athletes AS temp WHERE Athlete_id IN " +
+            "(SELECT Athlete_Id FROM olympicapp.medals WHERE (event_id IN " +
+            "(SELECT event_id FROM olympicapp.event_types WHERE sport = \"" + sport + "\"" + "))" +
+            "GROUP BY Athlete_Id) AND " + parameter + " <> \"NA\") AS temp2 ORDER BY " + parameter + " " + order + " LIMIT 4) AS temp3;";
+            List<List<string>> result = new List<List<string>>();
             MySqlCommand cmd = new MySqlCommand(queryString, connection);
             dataReader = cmd.ExecuteReader();
 
             //Read the data and store the name in string
             while (dataReader.Read())
             {
-                result.Add(dataReader["Name"] + "");
-                result.Add(dataReader[parameter] + "");
+                result.Add(new List<string> { dataReader["Name"] + "", dataReader[parameter] + "" });
 
             }
             //close Data Reader
@@ -310,16 +274,139 @@ namespace OlympicWeb.DB
         }
 
         //the best athlete in specific sport
-
-        public string TheBestAthlete(string sport)
-        {
-
+        /**
+        public List<string> TheBestAthlete(string sport, string helper){
             var queryString = "SELECT Name FROM olympicapp.athletes WHERE Athlete_Id = (SELECT Athlete_Id FROM (" +
             "SELECT Athlete_Id, COUNT(*) AS magnitude FROM (SELECT Athlete_Id, Medal FROM olympicapp.medals WHERE ((event_id IN " +
             "(SELECT event_id FROM olympicapp.event_types WHERE sport = \"" + sport + "\"" + ")) AND  medal <> \"NA\")) AS temp " +
             "GROUP BY Athlete_Id " +
              "ORDER BY magnitude DESC " +
             "LIMIT 1) AS temp2);";
+            List<string> result = new;
+            MySqlCommand cmd = new MySqlCommand(queryString, connection);
+            dataReader = cmd.ExecuteReader();
+            //Read the data and store the name in string
+            while (dataReader.Read())
+            {
+                result += dataReader["Name"] + "";
+                          
+            }
+            //close Data Reader
+             dataReader.Close();
+            
+             return result;
+        }
+        */
+
+        // quiz
+
+        public List<Question> GetQuestions(string sport)
+        {
+            List<Question> questions = new List<Question>();
+            //q1 who's the best athlete in the given sport
+            //get the correcr answer
+            List<string> theBestAthleteAnswers = TheBestXAthlete(sport, " AND  medal <> \"NA\"");
+            //get the id of the athlete
+            //string id = GetXByYWhereZFromAthletes("Athlete_id", "Name", theBestAthlete);
+            //get wrong answers
+            //List<string> wrongAnsersList = WrongsBestAthlete(sport, id);
+            string question = "Who's the best athlete in the field of " + sport + "?\n Hint:The best athlete is the athlete who won the most medals.";
+            Question q1 = new Question
+            {
+                QuestionString = question,
+                CorrectAnswer = theBestAthleteAnswers[0],
+                WrongAnswer1 = theBestAthleteAnswers[1],
+                WrongAnswer2 = theBestAthleteAnswers[2],
+                WrongAnswer3 = theBestAthleteAnswers[3],
+                Sport = sport
+            };
+            questions.Add(q1);
+            // q2 in which year the best athlete was born
+            string birthYear = GetXByYWhereZFromAthletes("Birth_year", "Name", theBestAthleteAnswers[0]);
+            List<string> wrongAnsersList = WrongYears(birthYear);
+            question = "In which year " + theBestAthleteAnswers[0] + " was born?";
+            Question q2 = new Question
+            {
+                QuestionString = question,
+                CorrectAnswer = birthYear,
+                WrongAnswer1 = wrongAnsersList[0],
+                WrongAnswer2 = wrongAnsersList[1],
+                WrongAnswer3 = wrongAnsersList[2],
+                Sport = sport
+            };
+            questions.Add(q2);
+
+            // q3 where this game took place
+            var random = new Random();
+            int index = random.Next(gamesList.Count);
+            string randomGame = gamesList[index];
+            string country = CountryOfOlympicGame(randomGame);
+            wrongAnsersList = WrongCountries(country);
+            question = "In which country the " + randomGame + "  games took place?";
+            Question q3 = new Question
+            {
+                QuestionString = question,
+                CorrectAnswer = country,
+                WrongAnswer1 = wrongAnsersList[0],
+                WrongAnswer2 = wrongAnsersList[1],
+                WrongAnswer3 = wrongAnsersList[2],
+                Sport = sport
+            };
+            questions.Add(q3);
+            // q4 who is the athlete that participant the most in games
+            List<string> answers = TheBestXAthlete(sport, "");
+            question = "Who is the athlete that participant the most in the olympic games in the field of " + sport + "?";
+            Question q4 = new Question
+            {
+                QuestionString = question,
+                CorrectAnswer = answers[0],
+                WrongAnswer1 = answers[1],
+                WrongAnswer2 = answers[2],
+                WrongAnswer3 = answers[3],
+                Sport = sport
+            };
+            questions.Add(q4);
+            // q4 who is the tallest athlete
+            List<List<string>> results = TheMostXAthlete(sport, "Height", "ASC");
+            question = "Who is the tallest athlete in the field of " + sport + "?";
+            Question q5 = new Question
+            {
+                QuestionString = question,
+                CorrectAnswer = results[0][0],
+                WrongAnswer1 = results[1][0],
+                WrongAnswer2 = results[2][0],
+                WrongAnswer3 = results[3][0],
+                Sport = sport
+            };
+            questions.Add(q5);
+            return questions;
+        }
+
+        public List<string> WrongsBestAthlete(string sport, string id)
+        {
+            var queryString = "SELECT NAME FROM athletes INNER JOIN (SELECT Athlete_Id FROM (" +
+            "SELECT Athlete_Id FROM (SELECT Athlete_Id, Medal FROM olympicapp.medals WHERE (event_id IN" +
+            "(SELECT event_id FROM olympicapp.event_types WHERE sport = \"" + sport + "\")) AND Athlete_id <> \"" + id + "\") AS temp " +
+            "GROUP BY Athlete_Id LIMIT 3) AS temp2) AS temp3 ON temp3.Athlete_id = athletes.Athlete_id;";
+            List<string> result = new List<string>();
+            MySqlCommand cmd = new MySqlCommand(queryString, connection);
+            dataReader = cmd.ExecuteReader();
+
+            //Read the data and store the name in string
+            while (dataReader.Read())
+            {
+                result.Add(dataReader["Name"] + "");
+
+            }
+            //close Data Reader
+            dataReader.Close();
+
+            return result;
+
+        }
+        public string GetXByYWhereZFromAthletes(string x, string y, string z)
+        {
+            var queryString = "SELECT " + x + " From olympicapp.athletes WHERE " + y + " = \"" + z + "\""; ;
             string result = "";
             MySqlCommand cmd = new MySqlCommand(queryString, connection);
             dataReader = cmd.ExecuteReader();
@@ -327,7 +414,65 @@ namespace OlympicWeb.DB
             //Read the data and store the name in string
             while (dataReader.Read())
             {
-                result += dataReader["Name"] + "";
+                result += dataReader[x] + "";
+
+            }
+            //close Data Reader
+            dataReader.Close();
+
+            return result;
+
+
+        }
+
+        public List<string> WrongYears(string year)
+        {
+            var queryString = "SELECT Birth_year From olympicapp.athletes WHERE Birth_year <> \"" + year + "\" LIMIT 3";
+            List<string> result = new List<string>();
+            MySqlCommand cmd = new MySqlCommand(queryString, connection);
+            dataReader = cmd.ExecuteReader();
+
+            //Read the data and store the name in string
+            while (dataReader.Read())
+            {
+                result.Add(dataReader["Birth_year"] + "");
+
+            }
+            //close Data Reader
+            dataReader.Close();
+            return result;
+
+        }
+
+        public string CountryOfOlympicGame(string game)
+        {
+            var queryString = "SELECT Country FROM countries WHERE City =(SELECT City FROM olympic_games WHERE Game = \"" + game + "\")"; ;
+            string result = "";
+            MySqlCommand cmd = new MySqlCommand(queryString, connection);
+            dataReader = cmd.ExecuteReader();
+
+            //Read the data and store the name in string
+            while (dataReader.Read())
+            {
+                result += dataReader["Country"] + "";
+
+            }
+            //close Data Reader
+            dataReader.Close();
+
+            return result;
+        }
+        public List<string> WrongCountries(string country)
+        {
+            var queryString = "SELECT DISTINCT Country From olympicapp.countries WHERE Country <> \"" + country + "\" LIMIT 3;";
+            List<string> result = new List<string>();
+            MySqlCommand cmd = new MySqlCommand(queryString, connection);
+            dataReader = cmd.ExecuteReader();
+
+            //Read the data and store the name in string
+            while (dataReader.Read())
+            {
+                result.Add(dataReader["Country"] + "");
 
             }
             //close Data Reader
@@ -337,6 +482,31 @@ namespace OlympicWeb.DB
 
         }
 
+        //get the best athlete with the helper " AND  medal <> \"NA\"" and if helper = "" get the most participant
+        public List<string> TheBestXAthlete(string sport, string helper)
+        {
+            var queryString = "SELECT Name FROM olympicapp.athletes WHERE Athlete_Id IN (SELECT Athlete_Id FROM (" +
+            "SELECT Athlete_Id, COUNT(*) AS magnitude FROM (SELECT Athlete_Id, Medal FROM olympicapp.medals WHERE ((event_id IN " +
+            "(SELECT event_id FROM olympicapp.event_types WHERE sport = \"" + sport + "\"" + ")))" + helper + ") AS temp " +
+            "GROUP BY Athlete_Id " +
+             "ORDER BY magnitude DESC " +
+            "LIMIT 4) AS temp2);";
+            List<string> result = new List<string>();
+            MySqlCommand cmd = new MySqlCommand(queryString, connection);
+            dataReader = cmd.ExecuteReader();
+
+            //Read the data and store the name in string
+            while (dataReader.Read())
+            {
+                result.Add(dataReader["Name"] + "");
+
+            }
+            //close Data Reader
+            dataReader.Close();
+
+            return result;
+
+        }
         //users
 
         public bool NewUserRegister(string username, string password)
@@ -427,7 +597,7 @@ namespace OlympicWeb.DB
         public bool ChangePassword(string username, string new_password)
         {
 
-            string queryString = " UPDATE olympicapp.users WHERE SET Password = \"" + new_password + "\"' WHERE User_name = \"" + username + "\"";
+            string queryString = " UPDATE olympicapp.users SET Password = \"" + new_password + "\"' WHERE User_name = \"" + username + "\"";
             MySqlCommand cmd = new MySqlCommand(queryString, connection);
             try
             {
@@ -492,6 +662,5 @@ namespace OlympicWeb.DB
             }
 
         }
-
     }
 }
