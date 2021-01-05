@@ -25,7 +25,7 @@ namespace OlympicWeb.DB
         //Initialize values
         private void Initialize()
         {
-            string connectionString = "Server=127.0.0.1;Database=olympicapp;User Id=root;Password=6u6fwn8S9";
+            string connectionString = "Server=127.0.0.1;Database=olympicapp;User Id=root;Password=***";
             connection = new MySqlConnection(connectionString);
         }
 
@@ -129,7 +129,10 @@ namespace OlympicWeb.DB
         {
             return sportsList;
         }
-
+        public List<string> GetGamesList()
+        {
+            return gamesList;
+        }
         public List<string> GeneratePosts()
         {
             List<string> posts = new List<string>();
@@ -340,7 +343,7 @@ namespace OlympicWeb.DB
             var random = new Random();
             int index = random.Next(gamesList.Count);
             string randomGame = gamesList[index];
-            string country = CountryOfOlympicGame(randomGame);
+            string country = LocationOfOlympicGame(randomGame)[0];
             wrongAnsersList = WrongCountries(country);
             question = "In which country the " + randomGame + "  games took place?";
             Question q3 = new Question
@@ -443,17 +446,18 @@ namespace OlympicWeb.DB
 
         }
 
-        public string CountryOfOlympicGame(string game)
+        public List<string> LocationOfOlympicGame(string game)
         {
-            var queryString = "SELECT Country FROM countries WHERE City =(SELECT City FROM olympic_games WHERE Game = \"" + game + "\")"; ;
-            string result = "";
+            var queryString = "SELECT Country,City FROM countries WHERE City =(SELECT City FROM olympic_games WHERE Game = \"" + game + "\")"; ;
+            List<string> result = new List<string>();
             MySqlCommand cmd = new MySqlCommand(queryString, connection);
             dataReader = cmd.ExecuteReader();
 
             //Read the data and store the name in string
             while (dataReader.Read())
             {
-                result += dataReader["Country"] + "";
+                result.Add(dataReader["Country"] + "");
+                result.Add(dataReader["City"] + "");
 
             }
             //close Data Reader
@@ -644,6 +648,27 @@ namespace OlympicWeb.DB
                 Console.WriteLine("alredy exist");
                 return false;
             }
+
+        }
+
+        //TODO!!!!!!!!!!!!!
+        public List<string> GetAdminList(string username)
+        {
+            var queryString = "";
+            List<string> result = new List<string>();
+            MySqlCommand cmd = new MySqlCommand(queryString, connection);
+            dataReader = cmd.ExecuteReader();
+
+            //Read the data and store the name in string
+            while (dataReader.Read())
+            {
+                result.Add(dataReader["Name"] + "");
+
+            }
+            //close Data Reader
+            dataReader.Close();
+
+            return result;
 
         }
 
