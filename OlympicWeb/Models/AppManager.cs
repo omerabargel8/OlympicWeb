@@ -25,9 +25,7 @@ namespace OlympicWeb.Models
         {
             return dBConnect.GetQuestions(sport);
         }
-
-
-        public bool UserLogin(string username, string password)
+        public User UserLogin(string username, string password)
         {
             return dBConnect.Login(username, password);
         }
@@ -41,15 +39,24 @@ namespace OlympicWeb.Models
             return dBConnect.LikePost(username, post_id);
         }
 
-        public bool DeleteUser(string username, string password, bool isAdmin)
+        public void DeleteUser(string username)
         {
-            return dBConnect.DeleteUser(username, password, isAdmin);
+            dBConnect.DeleteUser(username);
         }
         public bool ChangePassword(string username, string password)
         {
             return dBConnect.ChangePassword(username, password);
 
         }
+        public List<string> GetSportList()
+        {
+            return dBConnect.GetSportList();
+        }
+        public bool UpdateAdmin(User user, string sport, bool isAdmin)
+        {
+            return dBConnect.UpdateAdmin(user, sport, isAdmin);
+        }
+
 
     }
 }

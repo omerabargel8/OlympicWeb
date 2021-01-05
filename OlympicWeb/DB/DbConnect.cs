@@ -25,9 +25,7 @@ namespace OlympicWeb.DB
         //Initialize values
         private void Initialize()
         {
-
-            string connectionString = "Server=127.0.0.1;Database=olympicapp;User Id=root;Password=2691995";
-
+            string connectionString = "Server=127.0.0.1;Database=olympicapp;User Id=root;Password=6u6fwn8S9";
             connection = new MySqlConnection(connectionString);
         }
 
@@ -126,6 +124,11 @@ namespace OlympicWeb.DB
             return list;
 
         }
+        //TODO ON OMER
+        public List<string> GetSportList()
+        {
+            return sportsList;
+        }
 
         public List<string> GeneratePosts()
         {
@@ -187,7 +190,6 @@ namespace OlympicWeb.DB
                 }
 
             }
-
             return posts;
         }
 
@@ -307,12 +309,7 @@ namespace OlympicWeb.DB
         {
             List<Question> questions = new List<Question>();
             //q1 who's the best athlete in the given sport
-            //get the correcr answer
             List<string> theBestAthleteAnswers = TheBestXAthlete(sport, " AND  medal <> \"NA\"");
-            //get the id of the athlete
-            //string id = GetXByYWhereZFromAthletes("Athlete_id", "Name", theBestAthlete);
-            //get wrong answers
-            //List<string> wrongAnsersList = WrongsBestAthlete(sport, id);
             string question = "Who's the best athlete in the field of " + sport + "?\n Hint:The best athlete is the athlete who won the most medals.";
             Question q1 = new Question
             {
@@ -385,31 +382,30 @@ namespace OlympicWeb.DB
             return questions;
         }
 
-        public List<string> WrongsBestAthlete(string sport, string id)
-        {
+        /*
+        public List<string> WrongsBestAthlete(string sport, string id){
             var queryString = "SELECT NAME FROM athletes INNER JOIN (SELECT Athlete_Id FROM (" +
-            "SELECT Athlete_Id FROM (SELECT Athlete_Id, Medal FROM olympicapp.medals WHERE (event_id IN" +
-            "(SELECT event_id FROM olympicapp.event_types WHERE sport = \"" + sport + "\")) AND Athlete_id <> \"" + id + "\") AS temp " +
+            "SELECT Athlete_Id FROM (SELECT Athlete_Id, Medal FROM olympicapp.medals WHERE (event_id IN" + 
+            "(SELECT event_id FROM olympicapp.event_types WHERE sport = \"" +sport + "\")) AND Athlete_id <> \""+ id + "\") AS temp " + 
             "GROUP BY Athlete_Id LIMIT 3) AS temp2) AS temp3 ON temp3.Athlete_id = athletes.Athlete_id;";
             List<string> result = new List<string>();
             MySqlCommand cmd = new MySqlCommand(queryString, connection);
             dataReader = cmd.ExecuteReader();
-
             //Read the data and store the name in string
             while (dataReader.Read())
             {
                 result.Add(dataReader["Name"] + "");
-
+                          
             }
             //close Data Reader
-            dataReader.Close();
+             dataReader.Close();
+            
+             return result;
+        }*/
 
-            return result;
-
-        }
         public string GetXByYWhereZFromAthletes(string x, string y, string z)
         {
-            var queryString = "SELECT " + x + " From olympicapp.athletes WHERE " + y + " = \"" + z + "\""; ;
+            var queryString = @"SELECT " + x + " From olympicapp.athletes WHERE " + y + " = '" + z + "';";
             string result = "";
             MySqlCommand cmd = new MySqlCommand(queryString, connection);
             dataReader = cmd.ExecuteReader();
@@ -532,45 +528,51 @@ namespace OlympicWeb.DB
             }
             //close Data Reader
         }
-        public bool Login(string username, string password)
+        public User Login(string username, string password)
         {
-            string queryString = "SELECT User_name, Password FROM olympicapp.users WHERE User_name = \"" + username + "\" AND Password = \"" + password + "\"";
-            List<string> result = new List<string>();
+            string queryString = "SELECT User_name, Password, Is_admin FROM olympicapp.users WHERE User_name = \"" + username + "\" AND Password = \"" + password + "\"";
+            User result = new User();
             MySqlCommand cmd = new MySqlCommand(queryString, connection);
             try
             {
                 dataReader = cmd.ExecuteReader();
                 while (dataReader.Read())
                 {
-                    result.Add(dataReader["User_name"] + "");
-                    result.Add(dataReader["Password"] + "");
+                    result.Username = dataReader["User_name"] + "";
+                    result.Password = dataReader["Password"] + "";
+                    result.isAdmin = Convert.ToBoolean(Convert.ToInt16(dataReader["Is_admin"] + ""));
+
                 }
                 dataReader.Close();
-                if (result.Count == 2)
-                {
-                    return true;
-                }
+                return result;
+
             }
             catch (MySqlException)
             {
 
                 Console.WriteLine("password or user name incorrect");
             }
-            return false;
+            return result;
 
 
         }
 
-        public bool DeleteUser(string username, string password, bool isAdmin)
+        public void DeleteUser(string username)
         {
-            string queryString = " DELETE FROM olympicapp.users WHERE User_name = \"" + username + "\" AND Password = \"" + password + "\"";
+            // is admin
+            bool isAdmin = false;
+            if (username.Last() == '&')
+            {
+                isAdmin = true;
+                username = username.Remove(username.Length - 1);
+            }
+            string queryString = " DELETE FROM olympicapp.users WHERE User_name = \"" + username + "\"";
             MySqlCommand cmd = new MySqlCommand(queryString, connection);
             try
             {
                 dataReader = cmd.ExecuteReader();
                 while (dataReader.Read()) { }
                 dataReader.Close();
-                return true;
             }
             catch (MySqlException)
             {
@@ -586,7 +588,6 @@ namespace OlympicWeb.DB
                     dataReader = cmd.ExecuteReader();
                     while (dataReader.Read()) { }
                     dataReader.Close();
-                    return true;
                 }
                 catch (MySqlException)
                 {
@@ -594,13 +595,11 @@ namespace OlympicWeb.DB
                     Console.WriteLine("error while deleting this admin user");
                 }
             }
-            return false;
-
         }
         public bool ChangePassword(string username, string new_password)
         {
 
-            string queryString = " UPDATE olympicapp.users SET Password = \"" + new_password + "\"' WHERE User_name = \"" + username + "\"";
+            string queryString = " UPDATE olympicapp.users SET Password = \"" + new_password + "\" WHERE User_name = \"" + username + "\";";
             MySqlCommand cmd = new MySqlCommand(queryString, connection);
             try
             {
@@ -616,6 +615,35 @@ namespace OlympicWeb.DB
             }
             return false;
 
+
+        }
+
+        public bool UpdateAdmin(User user, string sport, bool isAdmin)
+        {
+            string queryString = "";
+            if (!isAdmin)
+            {
+                queryString = "INSERT INTO admin_premission (User_name," + sport + ") VALUES(\"" + user.Username + "\", 1);";
+            }
+            else
+            {
+                queryString = "UPDATE olympicapp.admin_premission SET " + sport + "= 1 WHERE User_name = " + user.Username + "\";";
+            }
+            MySqlCommand cmd = new MySqlCommand(queryString, connection);
+            try
+            {
+                dataReader = cmd.ExecuteReader();
+                while (dataReader.Read()) { }
+                dataReader.Close();
+                return true;
+            }
+            catch (MySqlException ex)
+            {
+
+                Console.WriteLine(ex.Data);
+                Console.WriteLine("alredy exist");
+                return false;
+            }
 
         }
 
@@ -665,5 +693,6 @@ namespace OlympicWeb.DB
             }
 
         }
+
     }
 }

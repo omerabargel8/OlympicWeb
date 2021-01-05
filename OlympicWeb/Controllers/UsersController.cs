@@ -9,7 +9,7 @@ using OlympicWeb.Models;
 namespace OlympicWeb.Controllers
 {
     [Route("api/[controller]/[action]")]
-    [ApiController]
+    //[ApiController]
     public class UsersController : ControllerBase
     {
         private IAppManager manager;
@@ -19,10 +19,11 @@ namespace OlympicWeb.Controllers
         }
 
         [HttpPost]
-        // /api/Users/login
+        // /api/Users
         [ActionName("login")]
 
-        public bool Post(User user)
+        //returns user with the info if this user is admin      
+        public User Post(User user)
         {
             return manager.UserLogin(user.Username, user.Password);
         }
@@ -32,7 +33,7 @@ namespace OlympicWeb.Controllers
         [ActionName("sign_up")]
         public bool SignupPost(User user)
         {
-            Console.WriteLine("BLAAAAAAAAAAAAAAAAAA");
+            //User user = new User();
             return manager.UserSignup(user.Username, user.Password);
         }
         [HttpPost]
@@ -42,11 +43,21 @@ namespace OlympicWeb.Controllers
         {
             return manager.ChangePassword(user.Username, user.Password);
         }
-        [HttpDelete]
+        [HttpDelete("{username}")]
+        [ActionName("delete")]
         // /api/Users
-        public bool DeleteUser(User user, bool isAdmin)
+        public void DeleteUser(string username)
         {
-            return manager.DeleteUser(user.Username, user.Password, isAdmin);
+            manager.DeleteUser(username);
         }
+
+        [HttpPost]
+        // /api/Users/sign_up
+        [ActionName("admin")]
+        public bool UpdateAdmin(User user, string sport, bool isAdmin)
+        {
+            return manager.UpdateAdmin(user, sport, isAdmin);
+        }
+
     }
 }
