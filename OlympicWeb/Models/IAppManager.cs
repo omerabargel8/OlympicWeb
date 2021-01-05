@@ -14,6 +14,8 @@ namespace OlympicWeb.Models
         List<string> GetGamesList();
         string GetBestAthlete(string sport);
         List<string> GetLocationGame(string game);
+        List<string> GetTheMostXAthlete(string sport, string parameter, string order);
+        List<string>[] BasicFilter(string table, List<string> atributes);
 
         //quiz
         List<Question> GetQuestions(string sport);
@@ -25,7 +27,6 @@ namespace OlympicWeb.Models
         bool ChangePassword(string username, string password);
         bool UpdateAdmin(User user, string sport, bool isAdmin);
         List<string> GetAdminList(string username);
-        List<string> GetTheMostXAthlete(string sport, string parameter, string order);
 
     }
 }

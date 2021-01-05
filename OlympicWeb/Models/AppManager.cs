@@ -47,6 +47,13 @@ namespace OlympicWeb.Models
             return dBConnect.TheMostXAthlete(sport, parameter, order)[0];
         }
 
+
+        public List<string>[] BasicFilter(string table, List<string> atributes)
+        {
+            return dBConnect.BasicFilter(table, atributes);
+        }
+
+
         //quiz
         public List<Question> GetQuestions(string sport)
         {
