@@ -720,7 +720,7 @@ namespace OlympicWeb.DB
                 }
 
             }
-            queryString = "INSERT INTO admin_permissions (User_name, Sport) VALUES(\"" + user + "\"," + sport + ");";
+            queryString = "INSERT INTO admin_permissions (User_name, Sport) VALUES(\"" + user + "\",\"" + sport + "\");";
             cmd = new MySqlCommand(queryString, connection);
             try
             {
