@@ -123,6 +123,15 @@ Quiz.prototype.render = function (container) {
 
         }
 
+        sessionStorage.setItem('isAdmin', false);
+        if (score >= 1) {
+            sessionStorage.setItem('isAdmin', true);
+            var admin_username = sessionStorage.getItem('Username');
+            var cur_sport_field = sessionStorage.getItem('sport_field');
+            window.alert("CHAMP!!");
+            confetti.start();
+
+        }
 
 
         // Display the score with the appropriate message
@@ -131,8 +140,8 @@ Quiz.prototype.render = function (container) {
         var message;
         if (percentage === 1) {
             message = 'Great job!'
-        } else if (percentage >= .75) {
-            message = 'You did alright.'
+        } else if (percentage >= .6) {
+            message = 'Nice!'
         } else if (percentage >= .5) {
             message = 'Better luck next time.'
         } else {
