@@ -13,7 +13,7 @@
                     var res = x + y + z + y + w;
                     $("#Select_Sport").append(res);
                 }
-
+                //
             } else {
                 console.log("Error", xhttp.statusText);
                 alert(xhttp.statusText);
