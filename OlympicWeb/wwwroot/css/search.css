@@ -19,6 +19,18 @@
     border: 0;
 }
 
-button.w3-button.w3-dark-grey {
+button.w3-button.w3-dark-grey, button.w3-button.w3-light-grey {
     float: right;
+}
+
+select {
+    margin: 10px;
+}
+
+div#atributes {
+    width: 85%;
+}
+
+.zmdi {
+    margin-right: 10px;
 }

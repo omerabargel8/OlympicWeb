@@ -1,5 +1,4 @@
-﻿
-var userLogin;
+﻿var userLogin;
 
 function login() {
     var username = document.getElementById('Username').value;

@@ -122,17 +122,26 @@ Quiz.prototype.render = function (container) {
             });
 
         }
-
         sessionStorage.setItem('isAdmin', false);
-        if (score >= 1) {
+        if (score >= 3) {
             sessionStorage.setItem('isAdmin', true);
             var admin_username = sessionStorage.getItem('Username');
             var cur_sport_field = sessionStorage.getItem('sport_field');
-            window.alert("CHAMP!!");
-            confetti.start();
-
+            let xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState === 4) {
+                    if (this.status === 200) {
+                        console.log(this.responseText);
+                        console.log("BLAAAAAAA");
+                    } else {
+                        console.log("Error", xhttp.statusText);
+                        alert(xhttp.statusText);
+                    }
+                }
+            };
+            xhttp.open("POST", "https://localhost:44328/api/Users/admin/" + admin_username + "&" + cur_sport_field + "&true", true);
+            xhttp.send();
         }
-
 
         // Display the score with the appropriate message
         var percentage = score / self.questions.length;
