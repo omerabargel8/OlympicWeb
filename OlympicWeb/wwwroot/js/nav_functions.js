@@ -30,3 +30,4 @@ function open_profile_page() {
 function open_first_page() {
     window.location.href = "first_page.html";
 }
+

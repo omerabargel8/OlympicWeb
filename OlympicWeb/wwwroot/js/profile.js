@@ -9,3 +9,9 @@
 function submit_changes() {
     window.alert("Are you sure you want to save changes?");
 }
+
+function show_username() {
+    var username_place = document.getElementById("Username");
+    var cur_username = sessionStorage.getItem('Username');
+    username_place.textContent = cur_username;
+}

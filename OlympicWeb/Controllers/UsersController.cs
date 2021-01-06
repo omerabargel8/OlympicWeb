@@ -31,13 +31,16 @@ namespace OlympicWeb.Controllers
             return manager.UserLogin(user_name, password);
         }
 
-        [HttpPost]
+        [HttpPost("{username}")]
         // /api/Users/sign_up
         [ActionName("sign_up")]
-        public bool SignupPost(User user)
+        public bool SignupPost(string username)
         {
             //User user = new User();
-            return manager.UserSignup(user.Username, user.Password);
+            string[] temp = username.Split('&', 2);
+            string user_name = temp[0];
+            string password = temp[1];
+            return manager.UserSignup(user_name, password);
         }
         [HttpPost]
         // /api/Users/change_password
