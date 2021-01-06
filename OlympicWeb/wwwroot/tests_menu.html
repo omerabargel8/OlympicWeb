@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Bootstrap Example</title>
+    <title>Test Menu</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
@@ -11,6 +11,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script src="js/nav_functions.js"></script>
+    <script src="js/search.js"></script>
 
     <style>
         /* Remove the navbar's default margin-bottom and rounded borders */
@@ -32,7 +33,7 @@
         }
     </style>
 </head>
-<body>
+<body onload="get_sports()">
 
     <!-- NAV BAR-->
     <nav class="navbar navbar-inverse">
@@ -70,8 +71,11 @@
 
     <div class="container text-center">
         <form action="/action_page.php">
-            <label for="gsearch">Enter Sport:</label>
-            <input type="input" id="test_string">
+            <select id="Select_Sport" class="Select_Sport">
+                <option selected value="base">Select Sport</option>
+            </select>
+            <!--<label for="gsearch">Enter Sport:</label>-->
+            <!--<input type="input" id="test_string">-->
             <button type="button" onclick="get_test()">Go to Test </button>
         </form>
         <br><br>
@@ -90,11 +94,9 @@
 
         <script type="text/javascript">
             function get_test() {
-                var sport_name = document.getElementById("test_string").value;
+                var sport_name = document.getElementById("Select_Sport").value;
                 sessionStorage.setItem('sport_field', sport_name);
-                window.alert(sessionStorage.getItem('sport_field'));
                 window.location.href = "navbar.html";
-
             }
 
         </script>

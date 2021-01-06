@@ -1,4 +1,3 @@
-
 function open_login_page() {
     var x = document.getElementById("myGrid");
     window.location.href = "login.html";

@@ -31,13 +31,15 @@ namespace OlympicWeb.Controllers
             return manager.UserLogin(user_name, password);
         }
 
-        [HttpPost]
+        [HttpPost("{username}")]
         // /api/Users/sign_up
         [ActionName("sign_up")]
-        public bool SignupPost(User user)
+        public User SignupPost(string username)
         {
-            //User user = new User();
-            return manager.UserSignup(user.Username, user.Password);
+            string[] temp = username.Split('&', 2);
+            string user_name = temp[0];
+            string password = temp[1];
+            return manager.UserSignup(user_name, password);
         }
         [HttpPost]
         // /api/Users/change_password
@@ -54,14 +56,21 @@ namespace OlympicWeb.Controllers
             manager.DeleteUser(username);
         }
 
-        [HttpPost]
-        // /api/Users/admin
+        [HttpPost("{update}")]
+        // /api/Users/admin/username&sport&true
         [ActionName("admin")]
-        public bool UpdateAdmin(User user, string sport, bool isAdmin)
+        public bool UpdateAdmin(string update)
         {
-            return manager.UpdateAdmin(user, sport, isAdmin);
+            string[] temp = update.Split('&', 3);
+            string username = temp[0];
+            string sport = temp[1];
+            string isAdmin = temp[2];
+            return manager.UpdateAdmin(username, sport, bool.Parse(isAdmin));
         }
 
+
+        [HttpGet("{username}")]
+        [ActionName("adminlist")]
         public List<string> GetAdminList(string username)
         {
             return manager.GetAdminList(username);
