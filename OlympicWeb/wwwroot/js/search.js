@@ -48,7 +48,7 @@ function get_sports() {
                     var res = x + y + z;
                     $(".Select_Sport").append(res);
                 }
-
+                //
             } else {
                 console.log("Error", xhttp.statusText);
                 alert(xhttp.statusText);
