@@ -3,6 +3,7 @@ var userLogin;
 
 function login() {
     var username = document.getElementById('Username').value;
+    console.log("blaa");
     sessionStorage.setItem('Username', username);
     var password = document.getElementById('Password').value;
     let xhttp = new XMLHttpRequest();
