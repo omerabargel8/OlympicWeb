@@ -15,6 +15,7 @@
             if (this.status === 200) {
                 let feedPost = JSON.parse(this.responseText);
                 first_elem.textContent = feedPost[0].content;
+                document.getElementById("1st_like").textContent = feedPost[0].likes+ " Likes";
                 second_elem.textContent = feedPost[1].content;
                 third_elem.textContent = feedPost[2].content;
                 four_elem.textContent = feedPost[3].content;
@@ -33,3 +34,4 @@
     xhttp.open("GET", "https://localhost:44328/api/Feed", true);
     xhttp.send();
 }
+

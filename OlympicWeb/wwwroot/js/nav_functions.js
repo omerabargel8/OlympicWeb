@@ -30,3 +30,9 @@ function open_first_page() {
     window.location.href = "first_page.html";
 }
 
+function open_change_details_page() {
+
+    document.getElementById("show_details").src = "change_details.html";
+    //window.location.href = "change_details.html";
+}
+

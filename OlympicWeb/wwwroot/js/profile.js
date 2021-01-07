@@ -6,7 +6,6 @@
     if (isadmin) {
         temp = "&";
     }
-    //fetch("https://localhost:44328/api/Users/delete/sapir&", {
     fetch("https://localhost:44328/api/Users/delete/" + username + temp, {
         method: 'DELETE',
     });
@@ -21,4 +20,42 @@ function show_username() {
     var username_place = document.getElementById("Username");
     var cur_username = sessionStorage.getItem('Username');
     username_place.textContent = cur_username;
+}
+
+function update_passord() {
+    var name = sessionStorage.getItem('Username');
+    var new_password = document.getElementById("Password").value;
+    let xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+        if (this.readyState === 4) {
+            if (this.status === 200) {
+                alert("Password has changed successfully");
+                document.getElementById("Password").value = "";
+                console.log(this.responseText);
+            } else {
+                console.log("Error", xhttp.statusText);
+                alert(xhttp.statusText);
+            }
+        }
+    };
+    xhttp.open("POST", "https://localhost:44328/api/Users/change_password/" + name + "&" + new_password, true);
+    xhttp.send();
+}
+
+function open_admin_list_page() {
+    var name = sessionStorage.getItem('Username');
+    var new_password = document.getElementById("Password").value;
+    let xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+        if (this.readyState === 4) {
+            if (this.status === 200) {
+                
+            } else {
+                console.log("Error", xhttp.statusText);
+                alert(xhttp.statusText);
+            }
+        }
+    };
+    xhttp.open("GET", "https://localhost:44328/api/Users/adminlist/" + name, true);
+    xhttp.send();
 }
