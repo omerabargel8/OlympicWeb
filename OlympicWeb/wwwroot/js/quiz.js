@@ -122,6 +122,7 @@ Quiz.prototype.render = function (container) {
             });
 
         }
+ 
         if (score >= 3) {
             sessionStorage.setItem('isAdmin', true);
             var admin_username = sessionStorage.getItem('Username');
@@ -131,7 +132,6 @@ Quiz.prototype.render = function (container) {
                 if (this.readyState === 4) {
                     if (this.status === 200) {
                         console.log(this.responseText);
-                        console.log("BLAAAAAAA");
                     } else {
                         console.log("Error", xhttp.statusText);
                         alert(xhttp.statusText);

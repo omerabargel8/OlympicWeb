@@ -12,6 +12,8 @@ function login() {
                 console.log(this.responseText);
                 userLogin = JSON.parse(this.responseText);
                 if (userLogin.username != null && userLogin.password) {
+                    sessionStorage.setItem('Password', userLogin.password);
+                    sessionStorage.setItem('IsAdmin', userLogin.isAdmin);
                     open_home_page();
                 }
                 else {
