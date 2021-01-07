@@ -6,12 +6,12 @@
     if (isadmin) {
         temp = "&";
     }
-    //fetch("https://localhost:44328/api/Users/delete/sapir&", {
     fetch("https://localhost:44328/api/Users/delete/" + username + temp, {
         method: 'DELETE',
     });
     open_first_page();
 }
+
 
 function submit_changes() {
     window.alert("Are you sure you want to save changes?");

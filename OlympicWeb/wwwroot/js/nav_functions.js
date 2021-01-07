@@ -19,7 +19,7 @@ function open_tests_menu_page() {
 
 
 function open_home_page() {
-    window.location.href = "olympic_main.html";
+    window.location.href = "new_feed.html";
 }
 
 function open_profile_page() {

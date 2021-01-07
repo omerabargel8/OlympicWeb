@@ -33,3 +33,7 @@
     xhttp.open("GET", "https://localhost:44328/api/Feed", true);
     xhttp.send();
 }
+
+
+
+

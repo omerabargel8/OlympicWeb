@@ -31,7 +31,7 @@ namespace OlympicWeb.DB
         //Initialize values
         private void Initialize()
         {
-            string connectionString = "Server=127.0.0.1;Database=olympicapp;User Id=root;Password=2691995";
+            string connectionString = "Server=127.0.0.1;Database=olympicapp;User Id=root;Password=6u6fwn8S9";
             connection = new MySqlConnection(connectionString);
         }
 
@@ -190,7 +190,7 @@ namespace OlympicWeb.DB
             return yearsList;
         }
 
-        public List<string> GeneratePosts()
+        public void GeneratePosts()
         {
             List<string> posts = new List<string>();
             List<List<string>> temp = new List<List<string>>();
@@ -208,11 +208,11 @@ namespace OlympicWeb.DB
                 InsertIntoFeedTable(result, sport);
                 index = random.Next(sportsList.Count);
                 sport = sportsList[index];
-                result = "Did you know that the fatest athlete in the field of " + sport + " is ";
-                temp = TheMostXAthlete(sport, "Weight", "ASC");
+                result = "Did you know that the heaviest athlete in the field of " + sport + " is ";
+                temp = TheMostXAthlete(sport, "Weight", "DESC");
                 if (temp.Count > 0)
                 {
-                    result += temp[0] + "?\n This athlete weight is " + temp[1] + ".";
+                    result += temp[0][0] + "?\n This athlete weight is " + temp[0][1] + ".";
                     posts.Add(result);
                     InsertIntoFeedTable(result, sport);
                 }
@@ -220,7 +220,7 @@ namespace OlympicWeb.DB
                 index = random.Next(sportsList.Count);
                 sport = sportsList[index];
                 result = "Did you know that the leanest athlete in the field of " + sport + " is ";
-                temp = TheMostXAthlete(sport, "Weight", "DESC");
+                temp = TheMostXAthlete(sport, "Weight", "ASC");
                 if (temp.Count > 0)
                 {
 
@@ -231,7 +231,7 @@ namespace OlympicWeb.DB
                 index = random.Next(sportsList.Count);
                 sport = sportsList[index];
                 result = "Did you know that the tallest athlete in the field of " + sport + " is ";
-                temp = TheMostXAthlete(sport, "Height", "ASC");
+                temp = TheMostXAthlete(sport, "Height", "DESC");
                 if (temp.Count > 0)
                 {
                     result += temp[0][0] + "?\n This athlete height is " + temp[0][1] + ".";
@@ -241,7 +241,7 @@ namespace OlympicWeb.DB
                 index = random.Next(sportsList.Count);
                 sport = sportsList[index];
                 result = "Did you know that the shortest athlete in the field of " + sport + " is ";
-                temp = TheMostXAthlete(sport, "Height", "DESC");
+                temp = TheMostXAthlete(sport, "Height", "ASC");
                 if (temp.Count > 0)
                 {
                     result += temp[0][0] + "?\n This athlete height is " + temp[0][1] + ".";
@@ -250,7 +250,7 @@ namespace OlympicWeb.DB
                 }
 
             }
-            return posts;
+            //return posts;
         }
 
         public void InsertIntoFeedTable(string content, string sport)
@@ -259,14 +259,21 @@ namespace OlympicWeb.DB
             string date = DateTime.Today.ToString("yyyy-MM-dd");
             //INSERT INTO olympicapp.feed (Post_content,Sport,Date)
             //  VALUES ("test","test","2017-06-15");        
-            string queryString = "INSERT INTO olympicapp.feed (Post_content,Sport,Date) VALUES (\"" + content + "\",\"" + sport + "\",\"" + date + "\");";
-            Console.WriteLine(queryString);
-            MySqlCommand cmd = new MySqlCommand(queryString, connection);
-            dataReader = cmd.ExecuteReader();
-            while (dataReader.Read())
-            { }
-            //close Data Reader
-            dataReader.Close();
+            string queryString = @"INSERT INTO olympicapp.feed (Post_content,Sport,Date) VALUES ('" + content + "',\"" + sport + "\",\"" + date + "\");";
+            try
+            {
+                MySqlCommand cmd = new MySqlCommand(queryString, connection);
+                dataReader = cmd.ExecuteReader();
+                while (dataReader.Read())
+                { }
+                //close Data Reader
+                dataReader.Close();
+            }
+            catch (MySqlException)
+            {
+
+            }
+
 
         }
 
@@ -291,6 +298,7 @@ namespace OlympicWeb.DB
 
         public List<Post> FeedPosts()
         {
+            GeneratePosts();
             string queryString = "SELECT * FROM olympicapp.feed ORDER BY RAND() LIMIT 10;";
             MySqlCommand cmd = new MySqlCommand(queryString, connection);
             List<Post> posts = new List<Post>();
@@ -299,7 +307,7 @@ namespace OlympicWeb.DB
             //Read the data and store the name in string
             while (dataReader.Read())
             {
-                Post p1 = new Post { PostId = Int32.Parse(dataReader["Post_id"] + ""), Content = dataReader["Post_content"] + "", Likes = 0, Date = DateTime.Parse(dataReader["Date"] + "") };
+                Post p1 = new Post { PostId = Int32.Parse(dataReader["Post_id"] + ""), Content = dataReader["Post_content"] + "", Likes = 0, Date = DateTime.Parse(dataReader["Date"] + ""), Sport = dataReader["Sport"] + ""};
                 posts.Add(p1);
 
             }
@@ -739,8 +747,6 @@ namespace OlympicWeb.DB
 
         }
 
-
-        //TODO!!!!!!!!!!!!!
         public List<string> GetAdminList(string username)
         {
             string queryString = "SELECT Sport FROM olympicapp.admin_permissions WHERE User_name = \"" + username + "\";";
@@ -787,6 +793,22 @@ namespace OlympicWeb.DB
             {
 
                 Console.WriteLine("user alredy liked this post.");
+            }
+            return false;
+        }
+        public bool DislikePost(string username, string post_id)
+        {
+            string queryString = "DELETE FROM olympicapp.likes WHERE User_name='" + username + "' and Post_id = " + post_id + ";";
+            MySqlCommand cmd = new MySqlCommand(queryString, connection);
+            try
+            {
+                dataReader = cmd.ExecuteReader();
+                while (dataReader.Read()) { }
+                dataReader.Close();
+                return true;
+            }
+            catch (MySqlException)
+            {
             }
             return false;
         }

@@ -94,6 +94,10 @@ namespace OlympicWeb.Models
         {
             return dBConnect.LikePost(username, post_id);
         }
+        public bool DislikePost(string username, string post_id)
+        {
+            return dBConnect.DislikePost(username, post_id);
+        }
 
         public void DeleteUser(string username)
         {
