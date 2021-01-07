@@ -117,5 +117,6 @@ namespace OlympicWeb.Models
             return dBConnect.GetAdminList(username);
         }
 
+
     }
 }
