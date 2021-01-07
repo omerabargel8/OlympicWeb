@@ -9,6 +9,7 @@ namespace OlympicWeb.Models
     {
         public int PostId { get; set; }
         public string Content { get; set; }
+        public string Sport { get; set; }
         public int Likes { get; set; }
         public DateTime Date { get; set; }
     }

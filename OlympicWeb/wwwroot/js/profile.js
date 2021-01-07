@@ -49,7 +49,7 @@ function open_admin_list_page() {
     xhttp.onreadystatechange = function () {
         if (this.readyState === 4) {
             if (this.status === 200) {
-                
+
             } else {
                 console.log("Error", xhttp.statusText);
                 alert(xhttp.statusText);

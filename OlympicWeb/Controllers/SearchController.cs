@@ -5,8 +5,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OlympicWeb.Models;
+using System.Text.Json;
+using Microsoft.Extensions.Caching.Memory;
+
 
 namespace OlympicWeb.Controllers
+
 {
     [Route("api/[controller]/[action]")]
     //[ApiController]
@@ -101,12 +105,11 @@ namespace OlympicWeb.Controllers
             for (int i = 0; i < tempSplit.Length; i++)
             {
                 string h = tempSplit[i];
-                string[] temp = h.Split('=');
+                string[] temp = h.Split('-');
                 dictAtr.Add(temp[0], temp[1]);
 
             }
             return manager.BasicFilter(dictAtr);
-
         }
 
         /**
@@ -144,6 +147,7 @@ namespace OlympicWeb.Controllers
                 {
                     manager.DeleteUser(username);
                 }
+
                 [HttpPost]
                 // /api/Users/sign_up
                 [ActionName("admin")]

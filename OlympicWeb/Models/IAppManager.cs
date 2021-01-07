@@ -27,6 +27,8 @@ namespace OlympicWeb.Models
         User UserLogin(string username, string password);
         User UserSignup(string username, string password);
         bool LikePost(string username, string post_id);
+        bool DislikePost(string username, string post_id);
+
         void DeleteUser(string username);
         bool ChangePassword(string username, string password);
         bool UpdateAdmin(string user, string sport, bool isAdmin);

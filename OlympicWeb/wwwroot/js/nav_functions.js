@@ -19,8 +19,9 @@ function open_tests_menu_page() {
 
 
 function open_home_page() {
-    window.location.href = "olympic_main.html";
+    window.location.href = "new_feed.html";
 }
+
 
 function open_profile_page() {
     window.location.href = "profile.html";
@@ -35,4 +36,3 @@ function open_change_details_page() {
     document.getElementById("show_details").src = "change_details.html";
     //window.location.href = "change_details.html";
 }
-
