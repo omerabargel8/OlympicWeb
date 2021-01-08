@@ -11,6 +11,8 @@ function login() {
             if (this.status === 200) {
                 console.log(this.responseText);
                 userLogin = JSON.parse(this.responseText);
+                console.log(userLogin.username);
+                console.log(userLogin.password);
                 if (userLogin.username != null && userLogin.password) {
                     sessionStorage.setItem('Password', userLogin.password);
                     sessionStorage.setItem('IsAdmin', userLogin.isAdmin);
@@ -57,4 +59,7 @@ function signup() {
     };
     xhttp.open("POST", "https://localhost:44328/api/Users/sign_up/" + username + "&" + password, true);
     xhttp.send();
+}
+function open_signup_page() {
+    window.location.href = "sign_up.html";
 }

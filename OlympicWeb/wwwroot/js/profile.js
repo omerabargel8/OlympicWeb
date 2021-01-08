@@ -42,14 +42,21 @@ function update_passord() {
     xhttp.send();
 }
 
-function open_admin_list_page() {
+function show_admins() {
     var name = sessionStorage.getItem('Username');
-    var new_password = document.getElementById("Password").value;
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (this.readyState === 4) {
             if (this.status === 200) {
-
+                let adminlist = JSON.parse(this.responseText);
+                if (adminlist.length == 0) {
+                    var str = "<div>" + "You don't have admin permission" + "<br/>" + "go to Tests tab" + "</div> <br/>";
+                    $("#admin_list").append(str);
+                }
+                for (i = 0; i < adminlist.length; i++) {
+                    var str = "<li>" + adminlist[i] + "</li> <br/>";
+                    $("#admin_list").append(str);
+                }
             } else {
                 console.log("Error", xhttp.statusText);
                 alert(xhttp.statusText);
