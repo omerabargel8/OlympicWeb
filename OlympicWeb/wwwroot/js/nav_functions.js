@@ -34,5 +34,8 @@ function open_first_page() {
 function open_change_details_page() {
 
     document.getElementById("show_details").src = "change_details.html";
-    //window.location.href = "change_details.html";
+}
+
+function open_admin_list_page() {
+    document.getElementById("show_details").src = "admin_list.html";
 }

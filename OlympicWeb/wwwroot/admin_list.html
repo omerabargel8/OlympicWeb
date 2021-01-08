@@ -2,9 +2,14 @@
 <html>
 <head>
     <script src="js/nav_functions.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
+
     <style>
-        body, h1 {
-            font-family: "Montserrat", sans-serif
+        body, h1, b {
+            color: #467cc4;
+            font-family: fantasy;
+            font-weight: lighter;
         }
 
         img {
@@ -14,37 +19,21 @@
         .w3-row-padding img {
             margin-bottom: 12px
         }
+
     </style>
-</head>
 
     <div class="w3-opacity">
         <div class="w3-clear"></div>
         <header class="w3-center w3-margin-bottom">
-            <h2>Change Details</h2>
-            </header>
-        </div>
-    <body>
+            <h2>Achievements</h2>
+        </header>
+    </div>
+</head>
+
+    <body onload="show_admins()">
         <form>
-            <div class="container">
-                <p>Please fill in this form to change your password.</p>
-                <hr>
-
-                <!--<label for="Username"><b>Username</b></label>
-     <input type="text" name="Username" id="Username">
-     <script>
-         document.getElementById("Username").style.display = "none";
-         var cur_username = sessionStorage.getItem('Username');
-         document.getElementById("Username").value = cur_username;
-     </script>-->
-
-                <label for="Password"><b>Enter new password</b></label>
-                <input type="password" placeholder="Enter Password" name="Password" id="Password" required>
-
-                <div class="clearfix">
-                    <br />
-                    <button type="button" class="signupbtn" onclick="update_passord()">Update</button>
-                </div>
-            </div>
+            <ul class="container" id="admin_list">
+            </ul>
         </form>
         <!-- javascript file -->
         <script src="js/profile.js"></script>

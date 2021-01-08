@@ -31,7 +31,7 @@ namespace OlympicWeb.DB
         //Initialize values
         private void Initialize()
         {
-            string connectionString = "Server=127.0.0.1;Database=olympicapp;User Id=root;Password=6u6fwn8S9";
+            string connectionString = "Server=127.0.0.1;Database=olympicapp;User Id=root;Password=2691995";
             connection = new MySqlConnection(connectionString);
         }
 
@@ -625,9 +625,8 @@ namespace OlympicWeb.DB
 
                 Console.WriteLine("password or user name incorrect");
             }
+            dataReader.Close();
             return result;
-
-
         }
 
         public void DeleteUser(string username)
@@ -757,9 +756,7 @@ namespace OlympicWeb.DB
                 dataReader = cmd.ExecuteReader();
                 while (dataReader.Read())
                 {
-                    result.Add(dataReader["User_name"] + "");
-
-
+                    result.Add(dataReader["Sport"] + "");
                 }
                 dataReader.Close();
                 return result;
@@ -770,6 +767,7 @@ namespace OlympicWeb.DB
 
                 Console.WriteLine("password or user name incorrect");
             }
+            dataReader.Close();
             return result;
 
         }

@@ -17,7 +17,7 @@ function login() {
                     open_home_page();
                 }
                 else {
-                    alert("You need to fill this form.\n Or you can go back to homepage.");
+                        alert("Wrong username or password.");
                 }
 
 
