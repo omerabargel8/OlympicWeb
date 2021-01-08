@@ -1,6 +1,6 @@
 function open_login_page() {
     var x = document.getElementById("myGrid");
-    window.location.href = "login.html";
+    window.location.href = "new_login.html";
 }
 
 function open_sign_up_page() {
