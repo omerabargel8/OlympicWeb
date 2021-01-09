@@ -122,7 +122,6 @@ Quiz.prototype.render = function (container) {
             });
 
         }
- 
         if (score >= 3) {
             sessionStorage.setItem('isAdmin', true);
             var admin_username = sessionStorage.getItem('Username');
@@ -132,6 +131,7 @@ Quiz.prototype.render = function (container) {
                 if (this.readyState === 4) {
                     if (this.status === 200) {
                         console.log(this.responseText);
+                        console.log("BLAAAAAAA");
                     } else {
                         console.log("Error", xhttp.statusText);
                         alert(xhttp.statusText);
@@ -148,7 +148,6 @@ Quiz.prototype.render = function (container) {
         var message;
         if (percentage === 1) {
             message = 'Great job!'
-            confetti.start();
         } else if (percentage >= .6) {
             message = 'Nice!'
             confetti.start();

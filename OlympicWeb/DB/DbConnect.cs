@@ -31,7 +31,7 @@ namespace OlympicWeb.DB
         //Initialize values
         private void Initialize()
         {
-            string connectionString = "Server=127.0.0.1;Database=olympicapp;User Id=root;Password=Sapir1912";
+            string connectionString = "Server=127.0.0.1;Database=olympicapp;User Id=root;Password=6u6fwn8S9";
             connection = new MySqlConnection(connectionString);
         }
 
@@ -41,8 +41,8 @@ namespace OlympicWeb.DB
             try
             {
                 connection.Open();
-                sportsList = SelectColFromTable("Sport", "event_types", "");
-                gamesList = SelectColFromTable("Game", "olympic_games", "");
+                sportsList = SelectColFromTable("Sport", "event_types", " ORDER BY Sport ASC");
+                gamesList = SelectColFromTable("Game", "olympic_games", " ORDER BY Game ASC");
                 teamsList = SelectColFromTable("Team", "athletes", " ORDER BY Team ASC");
                 heightsList = SelectColFromTable("Height", "athletes", " WHERE Height<>'NA' ORDER BY Height ASC");
                 weightsList = SelectColFromTable("Weight", "athletes", " WHERE Weight<>'NA' ORDER BY cast(Weight as unsigned)  ASC");
@@ -72,49 +72,37 @@ namespace OlympicWeb.DB
         }
 
 
-        //Select statement
-        public List<string>[] Select()
-        {
-            List<string>[] list = new List<string>[2];
-            list[0] = new List<string>();
-            list[1] = new List<string>();
 
-            var queryString = "SELECT Athlete_Id,Name FROM olympicapp.athletes";
-            MySqlCommand cmd = new MySqlCommand(queryString, connection);
-            dataReader = cmd.ExecuteReader();
-
-            //Read the data and store them in the list
-            while (dataReader.Read())
-            {
-                list[0].Add(dataReader["Athlete_Id"] + "");
-                list[1].Add(dataReader["Name"] + "");
-                //list[2].Add(dataReader["age"] + "");
-            }
-            //close Data Reader
-            dataReader.Close();
-
-            return list;
-
-        }
-
-        //filter statement
+        //search function
         public List<string> BasicFilter(Dictionary<string, string> dictAtr)
         {
             List<string> result = new List<string>();
             string selectStr = "";
             string table = "";
+            bool flag = false;
             // handle which col we select and from where and change atr to match with the schema
-            if (dictAtr["Search"] == "Events")
+            if (dictAtr.ContainsKey("Search"))
             {
-                selectStr = "event";
-                table = "event_types";
-
+                if (dictAtr["Search"] == "Events")
+                {
+                    selectStr = "event";
+                    table = "event_types";
+                    flag = true;
+                }
+                else
+                {
+                    selectStr = "Name";
+                    table = "Athletes";
+                }
+                dictAtr.Remove("Search");
             }
             else
             {
                 selectStr = "Name";
                 table = "Athletes";
-
+            }
+            if (!flag)
+            {
                 if (dictAtr.ContainsKey("Sport"))
                 {
                     table = "(SELECT Athlete_id, Game_id, e.Event_id, Medal, Name, Sex, Height, Weight, Team,Birth_year,event, Sport " +
@@ -126,15 +114,12 @@ namespace OlympicWeb.DB
                                 "ON temp.Event_id= e.Event_id) AS temp";
                 }
             }
-            dictAtr.Remove("Search");
-
             //handle the where statment 
             string whereVals = "";
             foreach (KeyValuePair<string, string> pair in dictAtr)
             {
                 if (pair.Value.Length > 0)
                 {
-                    Console.WriteLine(pair);
                     whereVals += pair.Key;
                     whereVals += pair.Value;
                     whereVals += " AND " + pair.Key + "<>'NA'";
@@ -144,26 +129,31 @@ namespace OlympicWeb.DB
             }
             whereVals = whereVals.Remove(whereVals.Length - 4);
 
-            var queryString = "SELECT distinct " + selectStr + " FROM " + table + " WHERE " + whereVals + " LIMIT 20;";
+            var queryString = "SELECT distinct " + selectStr + " FROM " + table + " WHERE " + whereVals + " ORDER BY RAND() LIMIT 30;";
             MySqlCommand cmd = new MySqlCommand(queryString, connection);
-            dataReader = cmd.ExecuteReader();
-
-            //Read the data and store them in the list
-            while (dataReader.Read())
+            try
             {
-                result.Add(dataReader[selectStr] + "");
+                dataReader = cmd.ExecuteReader();
+
+                //Read the data and store them in the list
+                while (dataReader.Read())
+                {
+                    result.Add(dataReader[selectStr] + "");
+                }
+
             }
-            //close Data Reader
-            dataReader.Close();
+            catch (MySqlException) { }
             if (result.Count == 0)
             {
                 result.Add("Sorry, there are no results that match this search.\n Search for something else!");
             }
+            //close Data Reader
+            dataReader.Close();
             return result;
         }
 
 
-
+        // getters
         public List<string> GetSportList()
         {
             return sportsList;
@@ -184,19 +174,47 @@ namespace OlympicWeb.DB
         {
             return weightsList;
         }
-
         public List<string> GetBirthYears()
         {
             return yearsList;
         }
 
+
+        // select column fynction
+        public List<string> SelectColFromTable(string col, string table, string helper)
+        {
+            string query = "SELECT DISTINCT " + col + " FROM olympicapp." + table + helper + ";";
+            MySqlCommand cmd = new MySqlCommand(query, connection);
+            List<string> result = new List<string>();
+            try
+            {
+                dataReader = cmd.ExecuteReader();
+                //Read the data and store the name in string
+                while (dataReader.Read())
+                {
+                    result.Add(dataReader[col] + "");
+
+                }
+                dataReader.Close();
+
+            }
+            catch (MySqlException)
+            {
+                if (dataReader != null)
+                {
+                    dataReader.Close();
+                }
+            }
+
+            //close Data Reader
+            return result;
+        }
+
+        // feed functions
         public void GeneratePosts()
         {
-            List<string> posts = new List<string>();
             List<List<string>> temp = new List<List<string>>();
             List<string> check = new List<string>();
-
-            // choosing a random sport
             int numberOfPosts = 1;
             for (int i = 0; i < numberOfPosts; i++)
             {
@@ -208,8 +226,7 @@ namespace OlympicWeb.DB
                 if (check.Count > 0)
                 {
                     result += check[0];
-                    result += ".\n The best athlete is the athlete who won the most medals.";
-                    posts.Add(result);
+                    result += ".<br> The best athlete is the athlete who won the most medals.";
                     InsertIntoFeedTable(result, sport);
                 }
                 index = random.Next(sportsList.Count);
@@ -218,8 +235,7 @@ namespace OlympicWeb.DB
                 temp = TheMostXAthlete(sport, "Weight", "DESC");
                 if (temp.Count > 0)
                 {
-                    result += temp[0][0] + "?\n This athlete weight is " + temp[0][1] + ".";
-                    posts.Add(result);
+                    result += temp[0][0] + "?<br> This athlete weight is " + temp[0][1] + "kg.";
                     InsertIntoFeedTable(result, sport);
                 }
 
@@ -230,8 +246,7 @@ namespace OlympicWeb.DB
                 if (temp.Count > 0)
                 {
 
-                    result += temp[0][0] + "?\n This athlete weight is " + temp[0][1] + ".";
-                    posts.Add(result);
+                    result += temp[0][0] + "?<br> This athlete weight is " + temp[0][1] + "kg.";
                     InsertIntoFeedTable(result, sport);
                 }
                 index = random.Next(sportsList.Count);
@@ -240,8 +255,7 @@ namespace OlympicWeb.DB
                 temp = TheMostXAthlete(sport, "Height", "DESC");
                 if (temp.Count > 0)
                 {
-                    result += temp[0][0] + "?\n This athlete height is " + temp[0][1] + ".";
-                    posts.Add(result);
+                    result += temp[0][0] + "?<br> This athlete height is " + temp[0][1] + "cm.";
                     InsertIntoFeedTable(result, sport);
                 }
                 index = random.Next(sportsList.Count);
@@ -250,8 +264,7 @@ namespace OlympicWeb.DB
                 temp = TheMostXAthlete(sport, "Height", "ASC");
                 if (temp.Count > 0)
                 {
-                    result += temp[0][0] + "?\n This athlete height is " + temp[0][1] + ".";
-                    posts.Add(result);
+                    result += temp[0][0] + "?<br> This athlete height is " + temp[0][1] + "cm.";
                     InsertIntoFeedTable(result, sport);
                 }
                 index = random.Next(teamsList.Count);
@@ -261,7 +274,6 @@ namespace OlympicWeb.DB
                 if (number != "")
                 {
                     result += number + " athletes?<br>";
-                    posts.Add(result);
                     InsertIntoFeedTable(result, "General");
                 }
                 index = random.Next(sportsList.Count);
@@ -271,7 +283,6 @@ namespace OlympicWeb.DB
                 if (number != "")
                 {
                     result += number + " different events in the " + sport + " field?<br>";
-                    posts.Add(result);
                     InsertIntoFeedTable(result, "General");
                 }
                 index = random.Next(gamesList.Count);
@@ -281,7 +292,6 @@ namespace OlympicWeb.DB
                 if (check.Count > 0)
                 {
                     result += check[1] + ", " + check[0] + "?<br>";
-                    posts.Add(result);
                     InsertIntoFeedTable(result, sport);
                 }
                 index = random.Next(sportsList.Count);
@@ -292,7 +302,6 @@ namespace OlympicWeb.DB
                 if (maleAvg != "" && femaleAvg != " ")
                 {
                     result += maleAvg + " for men and " + femaleAvg + " for women?<br>";
-                    posts.Add(result);
                     InsertIntoFeedTable(result, sport);
                 }
                 index = random.Next(sportsList.Count);
@@ -302,12 +311,10 @@ namespace OlympicWeb.DB
                 if (check.Count > 0)
                 {
                     result += check[0] + " won a " + check[1] + " medal in the " + sport + " field?<br>";
-                    posts.Add(result);
                     InsertIntoFeedTable(result, sport);
                 }
 
             }
-            //return posts;
         }
 
         public void InsertIntoFeedTable(string content, string sport)
@@ -334,24 +341,6 @@ namespace OlympicWeb.DB
 
         }
 
-        public List<string> SelectColFromTable(string col, string table, string helper)
-        {
-            string query = "SELECT DISTINCT " + col + " FROM olympicapp." + table + helper + ";";
-            MySqlCommand cmd = new MySqlCommand(query, connection);
-            List<string> result = new List<string>();
-            dataReader = cmd.ExecuteReader();
-
-            //Read the data and store the name in string
-            while (dataReader.Read())
-            {
-                result.Add(dataReader[col] + "");
-
-            }
-            //close Data Reader
-            dataReader.Close();
-
-            return result;
-        }
 
         public List<Post> FeedPosts()
         {
@@ -408,14 +397,16 @@ namespace OlympicWeb.DB
             var queryString = @"SELECT COUNT(distinct athletes.Name) as number FROM olympicapp.athletes WHERE athletes.Team='" + team + "';";
             string result = "";
             MySqlCommand cmd = new MySqlCommand(queryString, connection);
-            dataReader = cmd.ExecuteReader();
-
-            //Read the data and store the name in string
-            while (dataReader.Read())
+            try
             {
-                result += dataReader["number"] + "";
-
+                dataReader = cmd.ExecuteReader();
+                //Read the data and store the name in string
+                while (dataReader.Read())
+                {
+                    result += dataReader["number"] + "";
+                }
             }
+            catch (MySqlException) { }
             //close Data Reader
             dataReader.Close();
             return result;
@@ -425,14 +416,18 @@ namespace OlympicWeb.DB
             var queryString = @"SELECT COUNT(distinct event_types.event) as number FROM olympicapp.event_types WHERE event_types.Sport='" + sport + "';";
             string result = "";
             MySqlCommand cmd = new MySqlCommand(queryString, connection);
-            dataReader = cmd.ExecuteReader();
-
-            //Read the data and store the name in string
-            while (dataReader.Read())
+            try
             {
-                result += dataReader["number"] + "";
+                dataReader = cmd.ExecuteReader();
 
+                //Read the data and store the name in string
+                while (dataReader.Read())
+                {
+                    result += dataReader["number"] + "";
+
+                }
             }
+            catch (MySqlException) { }
             //close Data Reader
             dataReader.Close();
             return result;
@@ -445,14 +440,16 @@ namespace OlympicWeb.DB
                 "(SELECT event_id FROM olympicapp.event_types WHERE sport = '" + sport + "'))));";
             string result = "";
             MySqlCommand cmd = new MySqlCommand(queryString, connection);
-            dataReader = cmd.ExecuteReader();
-
-            //Read the data and store the name in string
-            while (dataReader.Read())
+            try
             {
-                result += dataReader["avg"] + "";
-
+                dataReader = cmd.ExecuteReader();
+                //Read the data and store the name in string
+                while (dataReader.Read())
+                {
+                    result += dataReader["avg"] + "";
+                }
             }
+            catch (MySqlException) { }
             //close Data Reader
             dataReader.Close();
             return result;
@@ -467,14 +464,17 @@ namespace OlympicWeb.DB
                               "ORDER BY RAND() LIMIT 1;";
             List<string> result = new List<string>();
             MySqlCommand cmd = new MySqlCommand(queryString, connection);
-            dataReader = cmd.ExecuteReader();
-            //Read the data and store the name in string
-            while (dataReader.Read())
+            try
             {
-                result.Add(dataReader["Name"] + "");
-                result.Add(dataReader["Medal"] + "");
-
+                dataReader = cmd.ExecuteReader();
+                //Read the data and store the name in string
+                while (dataReader.Read())
+                {
+                    result.Add(dataReader["Name"] + "");
+                    result.Add(dataReader["Medal"] + "");
+                }
             }
+            catch (MySqlException) { }
             //close Data Reader
             dataReader.Close();
 
@@ -488,6 +488,10 @@ namespace OlympicWeb.DB
             List<Question> questions = new List<Question>();
             //q1 who's the best athlete in the given sport
             List<string> theBestAthleteAnswers = TheBestXAthlete(sport, " AND  medal <> \"NA\"");
+            if (theBestAthleteAnswers.Count < 4)
+            {
+                getWorngAnswers(sport, theBestAthleteAnswers);
+            }
             string question = "Who's the best athlete in the field of " + sport + "?\n Hint:The best athlete is the athlete who won the most medals.";
             Question q1 = new Question
             {
@@ -560,46 +564,61 @@ namespace OlympicWeb.DB
             return questions;
         }
 
-        /*
-        public List<string> WrongsBestAthlete(string sport, string id){
-            var queryString = "SELECT NAME FROM athletes INNER JOIN (SELECT Athlete_Id FROM (" +
-            "SELECT Athlete_Id FROM (SELECT Athlete_Id, Medal FROM olympicapp.medals WHERE (event_id IN" + 
-            "(SELECT event_id FROM olympicapp.event_types WHERE sport = \"" +sport + "\")) AND Athlete_id <> \""+ id + "\") AS temp " + 
-            "GROUP BY Athlete_Id LIMIT 3) AS temp2) AS temp3 ON temp3.Athlete_id = athletes.Athlete_id;";
+
+        public void getWorngAnswers(string sport, List<string> answers)
+        {
+            List<string> list = get4randomAthletesBySport(sport);
+            for (int i = 0; i < 4; i++)
+            {
+                if (!answers.Contains(list[i]))
+                {
+                    answers.Add(list[i]);
+                }
+            }
+
+        }
+        public List<string> get4randomAthletesBySport(string sport)
+        {
+            var queryString = "(SELECT DISTINCT olympicapp.athletes.Name, olympicapp.medals.Medal " +
+                              "FROM olympicapp.medals JOIN olympicapp.event_types " +
+                              "ON olympicapp.medals.Event_id = olympicapp.event_types.Event_id JOIN olympicapp.athletes " +
+                              "ON olympicapp.athletes.Athlete_id = olympicapp.medals.Athlete_id " +
+                              "WHERE olympicapp.event_types.Sport = '" + sport + "') " +
+                              "ORDER BY RAND() LIMIT 4;";
             List<string> result = new List<string>();
             MySqlCommand cmd = new MySqlCommand(queryString, connection);
-            dataReader = cmd.ExecuteReader();
-            //Read the data and store the name in string
-            while (dataReader.Read())
+            try
             {
-                result.Add(dataReader["Name"] + "");
-                          
+                dataReader = cmd.ExecuteReader();
+                //Read the data and store the name in string
+                while (dataReader.Read())
+                {
+                    result.Add(dataReader["Name"] + "");
+                }
             }
+            catch (MySqlException) { }
             //close Data Reader
-             dataReader.Close();
-            
-             return result;
-        }*/
-
+            dataReader.Close();
+            return result;
+        }
         public string GetXByYWhereZFromAthletes(string x, string y, string z)
         {
             var queryString = @"SELECT " + x + " From olympicapp.athletes WHERE " + y + " = '" + z + "';";
             string result = "";
             MySqlCommand cmd = new MySqlCommand(queryString, connection);
-            dataReader = cmd.ExecuteReader();
-
-            //Read the data and store the name in string
-            while (dataReader.Read())
+            try
             {
-                result += dataReader[x] + "";
-
+                dataReader = cmd.ExecuteReader();
+                //Read the data and store the name in string
+                while (dataReader.Read())
+                {
+                    result += dataReader[x] + "";
+                }
             }
+            catch (MySqlException) { }
             //close Data Reader
             dataReader.Close();
-
             return result;
-
-
         }
 
         public List<string> WrongYears(string year)
@@ -607,18 +626,20 @@ namespace OlympicWeb.DB
             var queryString = "SELECT Birth_year From olympicapp.athletes WHERE Birth_year <> \"" + year + "\" LIMIT 3";
             List<string> result = new List<string>();
             MySqlCommand cmd = new MySqlCommand(queryString, connection);
-            dataReader = cmd.ExecuteReader();
-
-            //Read the data and store the name in string
-            while (dataReader.Read())
+            try
             {
-                result.Add(dataReader["Birth_year"] + "");
+                dataReader = cmd.ExecuteReader();
 
+                //Read the data and store the name in string
+                while (dataReader.Read())
+                {
+                    result.Add(dataReader["Birth_year"] + "");
+                }
             }
+            catch (MySqlException) { }
             //close Data Reader
             dataReader.Close();
             return result;
-
         }
 
         public List<string> LocationOfOlympicGame(string game)
@@ -626,18 +647,19 @@ namespace OlympicWeb.DB
             var queryString = "SELECT Country,City FROM countries WHERE City =(SELECT City FROM olympic_games WHERE Game = \"" + game + "\")"; ;
             List<string> result = new List<string>();
             MySqlCommand cmd = new MySqlCommand(queryString, connection);
-            dataReader = cmd.ExecuteReader();
-
-            //Read the data and store the name in string
-            while (dataReader.Read())
+            try
             {
-                result.Add(dataReader["Country"] + "");
-                result.Add(dataReader["City"] + "");
-
+                dataReader = cmd.ExecuteReader();
+                //Read the data and store the name in string
+                while (dataReader.Read())
+                {
+                    result.Add(dataReader["Country"] + "");
+                    result.Add(dataReader["City"] + "");
+                }
             }
+            catch (MySqlException) { }
             //close Data Reader
             dataReader.Close();
-
             return result;
         }
         public List<string> WrongCountries(string country)
@@ -645,17 +667,20 @@ namespace OlympicWeb.DB
             var queryString = "SELECT DISTINCT Country From olympicapp.countries WHERE Country <> \"" + country + "\" LIMIT 3;";
             List<string> result = new List<string>();
             MySqlCommand cmd = new MySqlCommand(queryString, connection);
-            dataReader = cmd.ExecuteReader();
-
-            //Read the data and store the name in string
-            while (dataReader.Read())
+            try
             {
-                result.Add(dataReader["Country"] + "");
+                dataReader = cmd.ExecuteReader();
 
+                //Read the data and store the name in string
+                while (dataReader.Read())
+                {
+                    result.Add(dataReader["Country"] + "");
+
+                }
             }
+            catch (MySqlException) { }
             //close Data Reader
             dataReader.Close();
-
             return result;
 
         }
@@ -671,17 +696,20 @@ namespace OlympicWeb.DB
             "LIMIT 4) AS temp2);";
             List<string> result = new List<string>();
             MySqlCommand cmd = new MySqlCommand(queryString, connection);
-            dataReader = cmd.ExecuteReader();
-
-            //Read the data and store the name in string
-            while (dataReader.Read())
+            try
             {
-                result.Add(dataReader["Name"] + "");
+                dataReader = cmd.ExecuteReader();
 
+                //Read the data and store the name in string
+                while (dataReader.Read())
+                {
+                    result.Add(dataReader["Name"] + "");
+
+                }
             }
+            catch (MySqlException) { }
             //close Data Reader
             dataReader.Close();
-
             return result;
 
         }
@@ -696,21 +724,20 @@ namespace OlympicWeb.DB
             {
                 dataReader = cmd.ExecuteReader();
                 while (dataReader.Read()) { }
-                dataReader.Close();
                 result.Username = username;
                 result.Password = password;
                 result.isAdmin = false;
-                return result;
             }
             catch (MySqlException ex)
             {
-
                 Console.WriteLine(ex.Data);
                 Console.WriteLine("alredy exist");
-                return result;
             }
             //close Data Reader
+            dataReader.Close();
+            return result;
         }
+
         public User Login(string username, string password)
         {
             string queryString = "SELECT User_name, Password, Is_admin FROM olympicapp.users WHERE User_name = \"" + username + "\" AND Password = \"" + password + "\"";
@@ -724,20 +751,15 @@ namespace OlympicWeb.DB
                     result.Username = dataReader["User_name"] + "";
                     result.Password = dataReader["Password"] + "";
                     result.isAdmin = Convert.ToBoolean(Convert.ToInt16(dataReader["Is_admin"] + ""));
-
                 }
-                dataReader.Close();
-                return result;
-
             }
             catch (MySqlException)
             {
-
                 Console.WriteLine("password or user name incorrect");
             }
+            //close Data Reader
+            dataReader.Close();
             return result;
-
-
         }
 
         public void DeleteUser(string username)
@@ -755,11 +777,9 @@ namespace OlympicWeb.DB
             {
                 dataReader = cmd.ExecuteReader();
                 while (dataReader.Read()) { }
-                dataReader.Close();
             }
             catch (MySqlException)
             {
-
                 Console.WriteLine("error while deleting this user");
             }
             if (isAdmin)
@@ -771,7 +791,6 @@ namespace OlympicWeb.DB
                 {
                     dataReader = cmd.ExecuteReader();
                     while (dataReader.Read()) { }
-                    dataReader.Close();
                 }
                 catch (MySqlException)
                 {
@@ -785,15 +804,14 @@ namespace OlympicWeb.DB
                 {
                     dataReader = cmd.ExecuteReader();
                     while (dataReader.Read()) { }
-                    dataReader.Close();
                 }
                 catch (MySqlException)
                 {
-
                     Console.WriteLine("error while deleting this admin user");
                 }
 
             }
+            dataReader.Close();
         }
         public bool ChangePassword(string username, string new_password)
         {
@@ -809,9 +827,9 @@ namespace OlympicWeb.DB
             }
             catch (MySqlException)
             {
-
                 Console.WriteLine("error while deleting this user");
             }
+            dataReader.Close();
             return false;
 
 
@@ -832,8 +850,9 @@ namespace OlympicWeb.DB
                     dataReader.Close();
                     return true;
                 }
-                catch (MySqlException ex)
+                catch (MySqlException)
                 {
+                    dataReader.Close();
                     return false;
                 }
 
@@ -852,6 +871,7 @@ namespace OlympicWeb.DB
 
                 Console.WriteLine(ex.Data);
                 Console.WriteLine("alredy exist");
+                dataReader.Close();
                 return false;
             }
 
@@ -867,19 +887,17 @@ namespace OlympicWeb.DB
                 dataReader = cmd.ExecuteReader();
                 while (dataReader.Read())
                 {
-                    result.Add(dataReader["User_name"] + "");
-
-
+                    result.Add(dataReader["Sport"] + "");
                 }
-                dataReader.Close();
-                return result;
+                //dataReader.Close();
+                //return result;
 
             }
             catch (MySqlException)
             {
-
                 Console.WriteLine("password or user name incorrect");
             }
+            dataReader.Close();
             return result;
 
         }
@@ -904,6 +922,7 @@ namespace OlympicWeb.DB
 
                 Console.WriteLine("user alredy liked this post.");
             }
+            dataReader.Close();
             return false;
         }
         public bool DislikePost(string username, string post_id)
@@ -917,9 +936,8 @@ namespace OlympicWeb.DB
                 dataReader.Close();
                 return true;
             }
-            catch (MySqlException)
-            {
-            }
+            catch (MySqlException) { }
+            dataReader.Close();
             return false;
         }
 
@@ -943,6 +961,7 @@ namespace OlympicWeb.DB
             }
             catch (MySqlException)
             {
+                dataReader.Close();
                 return 0;
             }
 
