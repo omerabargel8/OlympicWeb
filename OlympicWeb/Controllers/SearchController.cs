@@ -109,7 +109,7 @@ namespace OlympicWeb.Controllers
                 dictAtr.Add(temp[0], temp[1]);
 
             }
-            return manager.BasicFilter(dictAtr);
+            return manager.Filter(dictAtr);
         }
 
         /**
@@ -147,7 +147,6 @@ namespace OlympicWeb.Controllers
                 {
                     manager.DeleteUser(username);
                 }
-
                 [HttpPost]
                 // /api/Users/sign_up
                 [ActionName("admin")]
