@@ -20,7 +20,7 @@ namespace OlympicWeb.Models
         string GetBestAthlete(string sport);
         List<string> GetLocationGame(string game);
         List<string> GetTheMostXAthlete(string sport, string parameter, string order);
-        List<string> BasicFilter(Dictionary<string, string> dictAtr);
+        List<string> Filter(Dictionary<string, string> dictAtr);
         //quiz
         List<Question> GetQuestions(string sport);
         //users
