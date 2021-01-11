@@ -24,112 +24,119 @@ namespace OlympicWeb.DB
             gamesList = dbGeneral.GetGamesList();
             teamsList = dbGeneral.GetTeamsList();
         }
+        //this function creats random posts of 10 post types, the random parameter refer to sport\game\team 
         public void GeneratePosts()
         {
             List<List<string>> temp = new List<List<string>>();
             List<string> check = new List<string>();
-            int numberOfPosts = 1;
-            for (int i = 0; i < numberOfPosts; i++)
+            //Post type 1
+            var random = new Random();
+            int index = random.Next(sportsList.Count);
+            string sport = sportsList[index];
+            string result = "The best athlete in the field of " + sport + " is ";
+            check = dbGeneral.TheBestXAthlete(sport, " AND  medal <> \"NA\"");
+            if (check.Count > 0)
             {
-                var random = new Random();
-                int index = random.Next(sportsList.Count);
-                string sport = sportsList[index];
-                string result = "The best athlete in the field of " + sport + " is ";
-                check = dbGeneral.TheBestXAthlete(sport, " AND  medal <> \"NA\"");
-                if (check.Count > 0)
-                {
-                    result += check[0];
-                    result += ".<br> The best athlete is the athlete who won the most medals.";
-                    InsertIntoFeedTable(result, sport);
-                }
-                index = random.Next(sportsList.Count);
-                sport = sportsList[index];
-                result = "Did you know that the heaviest athlete in the field of " + sport + " is ";
-                temp = dbGeneral.TheMostXAthlete(sport, "Weight", "DESC");
-                if (temp.Count > 0)
-                {
-                    result += temp[0][0] + "?<br> This athlete weight is " + temp[0][1] + "kg.";
-                    InsertIntoFeedTable(result, sport);
-                }
-
-                index = random.Next(sportsList.Count);
-                sport = sportsList[index];
-                result = "Did you know that the leanest athlete in the field of " + sport + " is ";
-                temp = dbGeneral.TheMostXAthlete(sport, "Weight", "ASC");
-                if (temp.Count > 0)
-                {
-
-                    result += temp[0][0] + "?<br> This athlete weight is " + temp[0][1] + "kg.";
-                    InsertIntoFeedTable(result, sport);
-                }
-                index = random.Next(sportsList.Count);
-                sport = sportsList[index];
-                result = "Did you know that the tallest athlete in the field of " + sport + " is ";
-                temp = dbGeneral.TheMostXAthlete(sport, "Height", "DESC");
-                if (temp.Count > 0)
-                {
-                    result += temp[0][0] + "?<br> This athlete height is " + temp[0][1] + "cm.";
-                    InsertIntoFeedTable(result, sport);
-                }
-                index = random.Next(sportsList.Count);
-                sport = sportsList[index];
-                result = "Did you know that the shortest athlete in the field of " + sport + " is ";
-                temp = dbGeneral.TheMostXAthlete(sport, "Height", "ASC");
-                if (temp.Count > 0)
-                {
-                    result += temp[0][0] + "?<br> This athlete height is " + temp[0][1] + "cm.";
-                    InsertIntoFeedTable(result, sport);
-                }
-                index = random.Next(teamsList.Count);
-                string team = teamsList[index];
-                result = "Did you know that the " + team + " team was represented by ";
-                string number = GetNumberOfAthletesFromTeam(team);
-                if (number != "")
-                {
-                    result += number + " athletes?<br>";
-                    InsertIntoFeedTable(result, "General");
-                }
-                index = random.Next(sportsList.Count);
-                sport = sportsList[index];
-                result = "Did you know that there are ";
-                number = GetDistinctEvents(sport);
-                if (number != "")
-                {
-                    result += number + " different events in the " + sport + " field?<br>";
-                    InsertIntoFeedTable(result, "General");
-                }
-                index = random.Next(gamesList.Count);
-                string game = gamesList[index];
-                result = "Did you know that the " + game + "  Olympics took place in ";
-                check = dbGeneral.LocationOfOlympicGame(game);
-                if (check.Count > 0)
-                {
-                    result += check[1] + ", " + check[0] + "?<br>";
-                    InsertIntoFeedTable(result, sport);
-                }
-                index = random.Next(sportsList.Count);
-                sport = sportsList[index];
-                result = "Did you know that the average height in the field of " + sport + " is ";
-                string maleAvg = GetAvgOfGender(sport, "M");
-                string femaleAvg = GetAvgOfGender(sport, "F");
-                if (maleAvg != "" && femaleAvg != " ")
-                {
-                    result += maleAvg + " for men and " + femaleAvg + " for women?<br>";
-                    InsertIntoFeedTable(result, sport);
-                }
-                index = random.Next(sportsList.Count);
-                sport = sportsList[index];
-                result = "Did you know that ";
-                check = GetRandomWin(sport);
-                if (check.Count > 0)
-                {
-                    result += check[0] + " won a " + check[1] + " medal in the " + sport + " field?<br>";
-                    InsertIntoFeedTable(result, sport);
-                }
-
+                result += check[0];
+                result += ".<br> The best athlete is the athlete who won the most medals.";
+                InsertIntoFeedTable(result, sport);
             }
+            //Post type 2
+            index = random.Next(sportsList.Count);
+            sport = sportsList[index];
+            result = "Did you know that the heaviest athlete in the field of " + sport + " is ";
+            temp = dbGeneral.TheMostXAthlete(sport, "Weight", "DESC");
+            if (temp.Count > 0)
+            {
+                result += temp[0][0] + "?<br> This athlete weight is " + temp[0][1] + "kg.";
+                InsertIntoFeedTable(result, sport);
+            }
+            //Post type 3
+            index = random.Next(sportsList.Count);
+            sport = sportsList[index];
+            result = "Did you know that the leanest athlete in the field of " + sport + " is ";
+            temp = dbGeneral.TheMostXAthlete(sport, "Weight", "ASC");
+            if (temp.Count > 0)
+            {
+
+                result += temp[0][0] + "?<br> This athlete weight is " + temp[0][1] + "kg.";
+                InsertIntoFeedTable(result, sport);
+            }
+            //Post type 4
+            index = random.Next(sportsList.Count);
+            sport = sportsList[index];
+            result = "Did you know that the tallest athlete in the field of " + sport + " is ";
+            temp = dbGeneral.TheMostXAthlete(sport, "Height", "DESC");
+            if (temp.Count > 0)
+            {
+                result += temp[0][0] + "?<br> This athlete height is " + temp[0][1] + "cm.";
+                InsertIntoFeedTable(result, sport);
+            }
+            //Post type 5
+            index = random.Next(sportsList.Count);
+            sport = sportsList[index];
+            result = "Did you know that the shortest athlete in the field of " + sport + " is ";
+            temp = dbGeneral.TheMostXAthlete(sport, "Height", "ASC");
+            if (temp.Count > 0)
+            {
+                result += temp[0][0] + "?<br> This athlete height is " + temp[0][1] + "cm.";
+                InsertIntoFeedTable(result, sport);
+            }
+            //Post type 6
+            index = random.Next(teamsList.Count);
+            string team = teamsList[index];
+            result = "Did you know that the " + team + " team was represented by ";
+            string number = GetNumberOfAthletesFromTeam(team);
+            if (number != "")
+            {
+                result += number + " athletes?<br>";
+                InsertIntoFeedTable(result, "General");
+            }
+            //Post type 7
+            index = random.Next(sportsList.Count);
+            sport = sportsList[index];
+            result = "Did you know that there are ";
+            number = GetDistinctEvents(sport);
+            if (number != "")
+            {
+                result += number + " different events in the " + sport + " field?<br>";
+                InsertIntoFeedTable(result, "General");
+            }
+            //Post type 8
+            index = random.Next(gamesList.Count);
+            string game = gamesList[index];
+            result = "Did you know that the " + game + "  Olympics took place in ";
+            check = dbGeneral.LocationOfOlympicGame(game);
+            if (check.Count > 0)
+            {
+                result += check[1] + ", " + check[0] + "?<br>";
+                InsertIntoFeedTable(result, sport);
+            }
+            //Post type 9
+            index = random.Next(sportsList.Count);
+            sport = sportsList[index];
+            result = "Did you know that the average height in the field of " + sport + " is ";
+            string maleAvg = GetAvgOfGender(sport, "M");
+            string femaleAvg = GetAvgOfGender(sport, "F");
+            if (maleAvg != "" && femaleAvg != " ")
+            {
+                result += maleAvg + " for men and " + femaleAvg + " for women?<br>";
+                InsertIntoFeedTable(result, sport);
+            }
+            //Post type 10
+            index = random.Next(sportsList.Count);
+            sport = sportsList[index];
+            result = "Did you know that ";
+            check = GetRandomWin(sport);
+            if (check.Count > 0)
+            {
+                result += check[0] + " won a " + check[1] + " medal in the " + sport + " field?<br>";
+                InsertIntoFeedTable(result, sport);
+            }
+
         }
 
+        //this function recieve post content and sport related to it and insert this post to Feed table
         public void InsertIntoFeedTable(string content, string sport)
         {
             string date = DateTime.Today.ToString("yyyy-MM-dd");
@@ -148,7 +155,8 @@ namespace OlympicWeb.DB
             }
         }
 
-
+        //function choose 10 random post from Feed table, check the number of likes of each post,
+        //and returns list of Posts.
         public List<Post> FeedPosts()
         {
             GeneratePosts();
@@ -166,7 +174,6 @@ namespace OlympicWeb.DB
                 }
             }
             catch (MySqlException) { }
-            //close Data Reader
             if (dataReader != null)
             {
                 dataReader.Close();
@@ -178,6 +185,7 @@ namespace OlympicWeb.DB
             return posts;
         }
 
+        //function recieve post_id and returns the number of likes of this post.
         public int GetNumberOfLikes(string post_id)
         {
             string queryString = "SELECT COUNT(Post_id) AS NumberOfLikes FROM" +
@@ -208,8 +216,7 @@ namespace OlympicWeb.DB
 
         }
 
-
-
+        //function recieves a random team and returns the number of athletes that represented this team.
         public string GetNumberOfAthletesFromTeam(string team)
         {
             var queryString = @"SELECT COUNT(distinct athletes.Name) as number FROM olympicapp.athletes WHERE athletes.Team='" + team + "';";
@@ -232,6 +239,8 @@ namespace OlympicWeb.DB
             }
             return result;
         }
+
+        //function recieves sport and returns the number of events in this sport
         public string GetDistinctEvents(string sport)
         {
             var queryString = @"SELECT COUNT(distinct event_types.event) as number FROM olympicapp.event_types WHERE event_types.Sport='" + sport + "';";
@@ -254,6 +263,8 @@ namespace OlympicWeb.DB
             }
             return result;
         }
+
+        //function recieves aport and gender and returns the avarage height of this genderin the specific sport.
         public string GetAvgOfGender(string sport, string gender)
         {
             var queryString = @"SELECT ROUND(AVG(athletes.Height),2) as avg FROM olympicapp.athletes WHERE athletes.Sex='" + gender + "'" +
@@ -279,6 +290,8 @@ namespace OlympicWeb.DB
             }
             return result;
         }
+        
+        //function recieves a aport and returns a random win(athlete and medal) from this sport.
         public List<string> GetRandomWin(string sport)
         {
             var queryString = "(SELECT olympicapp.athletes.Name, olympicapp.medals.Medal " +
@@ -307,6 +320,8 @@ namespace OlympicWeb.DB
             }
             return result;
         }
+
+        //function recieves post id and user name and update Likes table
         public bool LikePost(string username, string post_id)
         {
             string queryString = "INSERT INTO olympicapp.likes (User_name,Post_id)" +
@@ -328,6 +343,8 @@ namespace OlympicWeb.DB
             }
             return false;
         }
+        
+        //function recieves post_id and username and deletes from the Likes table.
         public bool DislikePost(string username, string post_id)
         {
             string queryString = "DELETE FROM olympicapp.likes WHERE User_name='" + username + "' and Post_id = " + post_id + ";";
