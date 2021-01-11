@@ -22,8 +22,7 @@ function login() {
                     alert("Wrong username or password.");
                 }
             } else {
-                console.log("Error", xhttp.statusText);
-                alert(xhttp.statusText);
+                alert("Connection problem, please try again later.");
             }
         }
     };
@@ -54,8 +53,7 @@ function signup() {
                         alert("Username already exists.\n");
                     }
                 } else {
-                    console.log("Error", xhttp.statusText);
-                    alert(xhttp.statusText);
+                    alert("Connection problem, please try again later.");
                 }
             }
         };

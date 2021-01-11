@@ -9,7 +9,10 @@ function delete_user() {
     }
     fetch("https://localhost:44328/api/Users/delete/" + username + temp, {
         method: 'DELETE',
+    }).catch(function () {
+        alert("Connection problem, please try again later.");
     });
+
     open_first_page();
 }
 
@@ -32,10 +35,8 @@ function update_passord() {
                 if (this.status === 200) {
                     alert("Password has changed successfully");
                     document.getElementById("Password").value = "";
-                    console.log(this.responseText);
                 } else {
-                    console.log("Error", xhttp.statusText);
-                    alert(xhttp.statusText);
+                    alert("Connection problem, please try again later.");
                 }
             }
         };
@@ -61,8 +62,7 @@ function show_admins() {
                     $("#admin_list").append(str);
                 }
             } else {
-                console.log("Error", xhttp.statusText);
-                alert(xhttp.statusText);
+                alert("Connection problem, please try again later.");
             }
         }
     };

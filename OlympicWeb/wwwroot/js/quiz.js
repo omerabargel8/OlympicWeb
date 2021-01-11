@@ -21,8 +21,7 @@ function get_quiz() {
                 }
 
             } else {
-                console.log("Error", xhttp.statusText);
-                alert(xhttp.statusText);
+                alert("Connection problem, please try again later.");
             }
         }
     };

@@ -22,8 +22,7 @@ function load_feed_news() {
 
                 }
             } else {
-                console.log("Error", xhttp.statusText);
-                alert(xhttp.statusText);
+                alert("Connection problem, please try again later.");
             }
         }
     };
@@ -43,8 +42,7 @@ function like(post_id) {
                 document.getElementById("like" + post_id).style.backgroundColor = "#337ab7";
                 document.getElementById("dislike" + post_id).style.backgroundColor = "#fff";
             } else {
-                console.log("Error", xhttp.statusText);
-                alert(xhttp.statusText);
+                alert("Connection problem, please try again later.");
             }
         }
     };
@@ -66,8 +64,7 @@ function dislike(post_id) {
                     update_number_of_likes(post_id);
                     document.getElementById("dislike" + post_id).style.backgroundColor = "#f19c9c";
                 } else {
-                    console.log("Error", xhttp.statusText);
-                    alert(xhttp.statusText);
+                    alert("Connection problem, please try again later.");
                 }
             }
         };
@@ -87,8 +84,7 @@ function update_number_of_likes(post_id) {
                 let number_of_likes = JSON.parse(this.responseText);
                 document.getElementById(post_id).textContent = number_of_likes + " Liked this!";
             } else {
-                console.log("Error", xhttp.statusText);
-                alert(xhttp.statusText);
+                alert("Connection problem, please try again later.");
             }
         }
     };
