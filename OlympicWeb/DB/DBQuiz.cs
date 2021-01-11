@@ -35,7 +35,7 @@ namespace OlympicWeb.DB
             {
                 getWorngAnswers(sport, theBestAthleteAnswers);
             }
-            string question = "Who's the best athlete in the field of " + sport + "?<br> Hint:The best athlete is the athlete who won the most medals.";
+            string question = "Who's the best athlete in the field of " + sport + "?\n Hint:The best athlete is the athlete who won the most medals.";
             Question q1 = new Question
             {
                 QuestionString = question,
