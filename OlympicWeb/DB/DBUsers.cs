@@ -18,8 +18,8 @@ namespace OlympicWeb.DB
             connection = conn;
         }
 
-        //users
-
+        // function gets username and password 
+        //and returns user object if its null the user was already exist
         public User NewUserRegister(string username, string password)
         {
             string queryString = "INSERT INTO olympicapp.users (User_name,Password,Is_admin) VALUES (\"" + username + "\",\"" + password + "\",0);";
@@ -45,7 +45,8 @@ namespace OlympicWeb.DB
             }
             return result;
         }
-
+        // function gets username and password 
+        //and returns user object if its null the user doesnt exist
         public User Login(string username, string password)
         {
             string queryString = "SELECT User_name, Password, Is_admin FROM olympicapp.users WHERE User_name = \"" + username + "\" AND Password = \"" + password + "\"";
@@ -73,6 +74,9 @@ namespace OlympicWeb.DB
             return result;
         }
 
+        //function gets username and delete the user from users table
+        // if the user is admin deletes it from the admin table too.
+        // and deletes its likes on posts
         public void DeleteUser(string username)
         {
             // is admin
@@ -131,6 +135,9 @@ namespace OlympicWeb.DB
                 dataReader.Close();
             }
         }
+
+        // function changes password of user
+        // return true if the password changed else false
         public bool ChangePassword(string username, string new_password)
         {
 
@@ -157,6 +164,9 @@ namespace OlympicWeb.DB
 
         }
 
+
+        // function update admin users in the admin table and if needed in the users table
+        //return true if the the update went successfully changed else false
         public bool UpdateAdmin(string user, string sport, bool isAdmin)
         {
             string queryString = "";
@@ -203,6 +213,7 @@ namespace OlympicWeb.DB
 
         }
 
+        // function returns a list of sports that the username has admin permissions
         public List<string> GetAdminList(string username)
         {
             string queryString = "SELECT Sport FROM olympicapp.admin_permissions WHERE User_name = \"" + username + "\";";

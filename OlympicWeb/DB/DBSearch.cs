@@ -18,6 +18,8 @@ namespace OlympicWeb.DB
             connection = conn;
         }
 
+        // gets a dictionary of values to search for
+        // returns a list of the results
         public List<string> Filter(Dictionary<string, string> dictAtr)
         {
             List<string> result = new List<string>();
@@ -45,6 +47,7 @@ namespace OlympicWeb.DB
                 selectStr = "Name";
                 table = "Athletes";
             }
+            // if we need to compare sport we need another table
             if (!flag)
             {
                 if (dictAtr.ContainsKey("Sport"))
@@ -97,8 +100,5 @@ namespace OlympicWeb.DB
             }
             return result;
         }
-
-
-
     }
 }

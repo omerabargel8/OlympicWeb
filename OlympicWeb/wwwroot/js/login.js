@@ -26,7 +26,7 @@ function login() {
             }
         }
     };
-    xhttp.open("GET", "https://localhost:44328/api/Users/login/" + username + "&" + password, true);
+    xhttp.open("GET", "../api/Users/login/" + username + "&" + password, true);
     xhttp.send();
 }
 
@@ -57,7 +57,7 @@ function signup() {
                 }
             }
         };
-        xhttp.open("POST", "https://localhost:44328/api/Users/sign_up/" + username + "&" + password, true);
+        xhttp.open("POST", "../api/Users/sign_up/" + username + "&" + password, true);
         xhttp.send();
     }
 }
@@ -69,7 +69,7 @@ function alphanumeric(inputtxt) {
         return true;
     }
     else {
-        alert('Please input alphanumeric characters only');
+        alert('Please input alphanumeric characters and _ only');
         return false;
     }
 }
