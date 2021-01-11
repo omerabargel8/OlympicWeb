@@ -1,5 +1,9 @@
 ﻿var userLogin;
 
+// login function
+// get username and password from html form
+// verify if the username exists in the database and the password is match to this username
+// if true- open home page, else- send an alert of wrong details
 function login() {
     var username = document.getElementById('Username').value;
     var password = document.getElementById('Password').value;
@@ -27,6 +31,10 @@ function login() {
     xhttp.send();
 }
 
+// sign up function
+// get username and password from html form
+// check if the username exists in the database
+// if not- create a new user and save his details in the database, else- send an alert of an existing username
 function signup() {
     var username = document.getElementById('Username').value;
     var password = document.getElementById('Password').value;

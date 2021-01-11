@@ -1,5 +1,7 @@
 ﻿var all_questions = [];
 
+// this function send to the server the sport field that the user chose
+// insert to list five questions about the chosen sport field
 function get_quiz() {
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
@@ -7,8 +9,6 @@ function get_quiz() {
             if (this.status === 200) {
                 let questions = JSON.parse(this.responseText);
 
-                console.log(questions);
-                //all_questions = [];
                 for (i = 0; i < questions.length; i++) {
                     var ch = {
                         question_string: questions[i].questionString,
@@ -33,9 +33,7 @@ function get_quiz() {
 }
 
 
-// Array of all the questions and choices to populate the questions. This might be saved in some JSON file or a database and we would have to read the data in.
 get_quiz();
-//window.alert(sport_field.get());
 var quiz_st = sessionStorage.getItem('sport_field');
 alert("This is " + quiz_st + " quiz \n GOOD LUCK!");
 
@@ -116,11 +114,6 @@ Quiz.prototype.render = function (container) {
             if (self.questions[i].user_choice_index === self.questions[i].correct_choice_index) {
                 score++;
             }
-
-            $('#quiz-retry-button').click(function (reset) {
-                quiz.render(quiz_container);
-            });
-
         }
         if (score >= 3) {
             var admin_username = sessionStorage.getItem('Username');
@@ -132,7 +125,6 @@ Quiz.prototype.render = function (container) {
                 if (this.readyState === 4) {
                     if (this.status === 200) {
                         console.log(this.responseText);
-                        console.log("BLAAAAAAA");
                         sessionStorage.setItem('IsAdmin', true);
 
                     } else {
@@ -151,6 +143,7 @@ Quiz.prototype.render = function (container) {
         var message;
         if (percentage === 1) {
             message = 'Great job!'
+            confetti.start();
         } else if (percentage >= .6) {
             message = 'Nice!'
             confetti.start();
@@ -190,7 +183,7 @@ var Question = function (question_string, correct_choice, wrong_choices) {
     this.user_choice_index = null; // Index of the user's choice selection
 
     // Random assign the correct choice an index
-    this.correct_choice_index = Math.floor(Math.random(0, wrong_choices.length + 1));
+    this.correct_choice_index = Math.floor(Math.random() * (wrong_choices.length + 1));
 
     // Fill in this.choices with the choices
     var number_of_choices = wrong_choices.length + 1;
