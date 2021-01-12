@@ -69,7 +69,7 @@ function alphanumeric(inputtxt) {
         return true;
     }
     else {
-        alert('Please input alphanumeric characters only');
+        alert('Please input alphanumeric characters and _ only');
         return false;
     }
 }

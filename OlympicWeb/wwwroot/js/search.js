@@ -1,5 +1,4 @@
-﻿
-// function is called when the body is loaded
+﻿// function is called when the body is loaded
 function start() {
     // Click on the first tablink on load
     document.getElementsByClassName("tablink")[0].click();
@@ -161,8 +160,11 @@ function getThefact(sport, fact) {
 function getTheAnswerMost(str) {
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
-        if (this.readyState === 4) {
+        if (this.readyState != 4) {
+            document.getElementById('loader_most').style.visibility = "visible";
+        } if (this.readyState === 4) {
             if (this.status === 200) {
+                document.getElementById('loader_most').style.visibility = "hidden";
                 let result = JSON.parse(this.responseText);
                 let answer = document.getElementById("answer_most");
                 answer.innerHTML = result[0] + ", " + result[1];
@@ -248,8 +250,11 @@ function getAtrToSearch() {
 function filter(atr, answer) {
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
-        if (this.readyState === 4) {
+        if (this.readyState != 4) {
+            document.getElementById('loader').style.visibility = "visible";
+        } if (this.readyState === 4) {
             if (this.status === 200) {
+                document.getElementById('loader').style.visibility = "hidden";
                 let results = JSON.parse(this.responseText);
                 for (i = 0; i < results.length; i++) {
                     $("#" + answer).append("<li class ='answer_display'>" + results[i] + "</li>");
@@ -257,6 +262,7 @@ function filter(atr, answer) {
                 document.getElementById(answer).style.display = "inline-block";
 
             } else {
+                document.getElementById('loader').style.visibility = "hidden";
                 alert("Connection problem, please try again later.");
             }
         }
@@ -383,4 +389,5 @@ function openLink(evt, linkName) {
     }
     document.getElementById(linkName).style.display = "block";
     evt.currentTarget.className += " w3-red";
+    resetSelects();
 }

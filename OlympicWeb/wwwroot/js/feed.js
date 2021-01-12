@@ -3,9 +3,14 @@
 function load_feed_news() {
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
-        if (this.readyState === 4) {
+        if (this.readyState != 4) {
+            document.getElementById('feed-panel').style.display = "none";
+            document.getElementById('loader').style.visibility = "visible";
+        } if (this.readyState === 4) {
             if (this.status === 200) {
                 $("#feed-panel").empty();
+                document.getElementById('loader').style.visibility = "hidden";
+                document.getElementById('feed-panel').style.display = "block";
                 let feedPost = JSON.parse(this.responseText);
                 for (i = 0; i < feedPost.length; i++) {
                     var str = "<div class='panel'><div class='media-block'>";
@@ -22,6 +27,7 @@ function load_feed_news() {
 
                 }
             } else {
+                document.getElementById('loader').style.visibility = "hidden";
                 alert("Connection problem, please try again later.");
             }
         }

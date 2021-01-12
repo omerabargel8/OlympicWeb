@@ -1,4 +1,5 @@
-﻿//delete user function
+﻿
+//delete user function
 //send the details of the current user to the server, delete this account and open first page
 function delete_user() {
     var username = sessionStorage.getItem('Username');
@@ -9,8 +10,6 @@ function delete_user() {
     }
     fetch("../api/Users/delete/" + username + temp, {
         method: 'DELETE',
-    }).catch(function () {
-        alert("Connection problem, please try again later.");
     });
 
     open_first_page();
@@ -52,6 +51,7 @@ function show_admins() {
     xhttp.onreadystatechange = function () {
         if (this.readyState === 4) {
             if (this.status === 200) {
+                $("#admin_list").empty();
                 let adminlist = JSON.parse(this.responseText);
                 if (adminlist.length == 0) {
                     var str = "<div>" + "You haven't completed any test yet.. " + "<br/>" + "Go to the Tests tab to try your best!" + "</div> <br/>";

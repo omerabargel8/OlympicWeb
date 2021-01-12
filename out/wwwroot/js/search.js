@@ -1,22 +1,19 @@
-﻿function start() {
+﻿// function is called when the body is loaded
+function start() {
     // Click on the first tablink on load
     document.getElementsByClassName("tablink")[0].click();
     get_sports();
-    // getList("Height", "heightslist");
-    // getList("Weight", "weightslist");
-    // getList("Team", "teamslist");
     getList("Select_Game", "gameslist");
-    // getList("Birth_year", "yearslist");
-
 }
 
+// gets an id of an elemet to append the list we get from the server
+// and a url that match the request for the server
 function getList(idName, url) {
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (this.readyState === 4) {
             if (this.status === 200) {
                 let games = JSON.parse(this.responseText);
-                console.log(games);
                 for (i = 0; i < games.length; i++) {
                     var x = "<option value=";
                     var y = '"' + games[i] + '"';
@@ -24,10 +21,8 @@ function getList(idName, url) {
                     var res = x + y + z;
                     $("#" + idName).append(res);
                 }
-
             } else {
-                console.log("Error", xhttp.statusText);
-                alert(xhttp.statusText);
+                alert("Connection problem, please try again later.");
             }
         }
     };
@@ -35,13 +30,14 @@ function getList(idName, url) {
     xhttp.send();
 }
 
+
+// append list of sports to thr right element in the html page
 function get_sports() {
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (this.readyState === 4) {
             if (this.status === 200) {
                 let sports = JSON.parse(this.responseText);
-                console.log(sports);
                 for (i = 0; i < sports.length; i++) {
                     var x = "<option value=";
                     var y = '"' + sports[i] + '"';
@@ -49,10 +45,8 @@ function get_sports() {
                     var res = x + y + z;
                     $(".Select_Sport").append(res);
                 }
-
             } else {
-                console.log("Error", xhttp.statusText);
-                alert(xhttp.statusText);
+                alert("Connection problem, please try again later.");
             }
         }
     };
@@ -60,6 +54,7 @@ function get_sports() {
     xhttp.send();
 }
 
+// resets the options that are selected on the page
 function resetSelects() {
     $("select").each(function () { this.selectedIndex = 0 });
     var x = document.getElementsByClassName("answer");
@@ -74,6 +69,7 @@ function resetSelects() {
     x.style.display = "none";
 }
 
+// function display the best athlete on the page
 function findBestAthlete() {
     var e = document.getElementById("BestAthleteSelect");
     var selectedSport = e.value;
@@ -86,6 +82,7 @@ function findBestAthlete() {
     }
 }
 
+// function display the location of a game on the page
 function findLocation() {
     var e = document.getElementById("Select_Game");
     var selectedGame = e.value;
@@ -99,28 +96,27 @@ function findLocation() {
     }
 }
 
+// get a sport and return the best athlete answer from the server
 function getBestAthlete(sport) {
     var sportstr = sport + '';
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (this.readyState === 4) {
             if (this.status === 200) {
-                console.log(this.responseText);
                 let best_athlete = this.responseText;
-                console.log(best_athlete);
                 let answer = document.getElementById("answer_athlete");
                 answer.innerHTML = best_athlete;
                 answer.style.display = "inline-block";
-
             } else {
-                console.log("Error", xhttp.statusText);
-                alert(xhttp.statusText);
+                alert("Connection problem, please try again later.");
             }
         }
     };
     xhttp.open("GET", "../api/Search/best_athlete/" + sportstr, true);
     xhttp.send();
 }
+
+// get a game and return the location of the game from the server
 function getLocation(game) {
     game = game.replace(' ', '');
     let xhttp = new XMLHttpRequest();
@@ -128,13 +124,11 @@ function getLocation(game) {
         if (this.readyState === 4) {
             if (this.status === 200) {
                 let location = JSON.parse(this.responseText);
-                console.log(location);
                 let answer = document.getElementById("answer_location");
                 answer.innerHTML = location[1] + " , " + location[0];
                 answer.style.display = "inline-block";
             } else {
-                console.log("Error", xhttp.statusText);
-                alert(xhttp.statusText);
+                alert("Connection problem, please try again later.");
             }
         }
     };
@@ -142,7 +136,7 @@ function getLocation(game) {
     xhttp.send();
 }
 
-
+// function display the fact answer on the page
 function getThefact(sport, fact) {
     var e = document.getElementById("Fact");
     // for example athletes or Games
@@ -161,21 +155,23 @@ function getThefact(sport, fact) {
     }
 }
 
+
+// function gets the answer from the server of the facts
 function getTheAnswerMost(str) {
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
-        if (this.readyState === 4) {
+        if (this.readyState != 4) {
+            document.getElementById('loader_most').style.visibility = "visible";
+        } if (this.readyState === 4) {
             if (this.status === 200) {
-                console.log(this.responseText);
+                document.getElementById('loader_most').style.visibility = "hidden";
                 let result = JSON.parse(this.responseText);
-                console.log(result);
                 let answer = document.getElementById("answer_most");
                 answer.innerHTML = result[0] + ", " + result[1];
                 answer.style.display = "inline-block";
 
             } else {
-                console.log("Error", xhttp.statusText);
-                alert(xhttp.statusText);
+                alert("Connection problem, please try again later.");
             }
         }
     };
@@ -183,7 +179,7 @@ function getTheAnswerMost(str) {
     xhttp.send();
 }
 
-
+// gets the selected values of the user and sent it to the filter function
 function getAtrToSearch() {
     //validation_filter();
     var atr = {};
@@ -242,47 +238,37 @@ function getAtrToSearch() {
         atr["Sport"] = "";
     }
     var check = validation_filter(atr);
-    console.log(atr);
     if (check) {
         //check if there are values
         filter(atr, "answer_filter");
         let answer = document.getElementById("answer_filter");
         answer.innerHTML = "";
     }
-
 }
 
-
+// gets the atributes to filter and the id where the answer should be displaied
 function filter(atr, answer) {
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
-        if (this.readyState === 4) {
+        if (this.readyState != 4) {
+            document.getElementById('loader').style.visibility = "visible";
+        } if (this.readyState === 4) {
             if (this.status === 200) {
+                document.getElementById('loader').style.visibility = "hidden";
                 let results = JSON.parse(this.responseText);
-                console.log(results);
-                console.log(results.length);
-                var flag = 0;
                 for (i = 0; i < results.length; i++) {
-                    if (i >= 12) {
-                        $("#" + answer).append("<li class='answer_display'>" + results[i] + "</li>");
-                        flag = 1;
-                    }
-                    else {
-                        $("#" + answer).append("<li class ='answer_display'>" + results[i] + "</li>");
-                    }
+                    $("#" + answer).append("<li class ='answer_display'>" + results[i] + "</li>");
                 }
-                // if(flag ==1) {
-                //     $("#answer_filter").append('<a href="#" onclick="next()" class="next round">&#8250;</a>');
-                // }
                 document.getElementById(answer).style.display = "inline-block";
 
             } else {
-                console.log("Error", xhttp.statusText);
-                alert(xhttp.statusText);
+                document.getElementById('loader').style.visibility = "hidden";
+                alert("Connection problem, please try again later.");
             }
         }
     };
     var str = "../api/Search/filter/";
+    // set the atributes on the url sent to the server
     for (var key in atr) {
         str += key;
         str += "-";
@@ -290,32 +276,11 @@ function filter(atr, answer) {
         str += "&";
     }
     str = str.slice(0, -1);
-    console.log(str);
     xhttp.open("GET", str, true);
     xhttp.send();
 }
 
-function next() {
-    var answers = document.getElementsByClassName("answer_display");
-    var hidden_answers = document.getElementsByClassName("hide");
-    var check = 0;
-    console.log(hidden_answers);
-    var arr = Array.prototype.slice.call(hidden_answers);
-    console.log(arr);
-    for (let index = 0; index < answers.length; index++) {
-        if (!arr.includes(answers[index])) {
-            answers[index].remove();;
-        }
-        // if (arr.includes(answers[index]) && check < 5){
-        //     answers[index].className = "answer_display";
-        //     //answers[index].className = "answer hide";
-        //     check += 1;
-        // }
-
-    }
-}
-
-
+// gets the selected values from the page and send it to filter to get the answer
 function getTheMedal() {
     var atr = {};
     var e = document.getElementById("MedalSelect");
@@ -337,7 +302,7 @@ function getTheMedal() {
     }
 }
 
-
+// function checks if the selected values are validate
 function validation_filter(atr) {
     if (atr["Search"] == "Events" && atr["Sport"] == "") {
         alert("Please choose sport");
@@ -371,8 +336,7 @@ function validation_filter(atr) {
     return true;
 }
 
-
-
+// open the correct menu after select of athletes or events in the filter tab
 function rightMenu(selectedVal) {
     var e = document.getElementById("dynamicAtr");
     e.style.display = "block";
@@ -412,7 +376,7 @@ function rightMenu(selectedVal) {
     }
 }
 
-// Tabs
+// Tabs function
 function openLink(evt, linkName) {
     var i, x, tablinks;
     x = document.getElementsByClassName("myLink");
@@ -425,4 +389,5 @@ function openLink(evt, linkName) {
     }
     document.getElementById(linkName).style.display = "block";
     evt.currentTarget.className += " w3-red";
+    resetSelects();
 }

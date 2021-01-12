@@ -12,13 +12,14 @@ namespace OlympicWeb.DB
 {
     public class DBConnect
     {
-
         private MySqlConnection connection;
 
         //Initialize values and open connection
         public bool OpenConnection()
         {
-            string connectionString = "Server=127.0.0.1;Database=olympicapp;User Id=root;Password=6u6fwn8S9";
+            string connectionString = "Server=127.0.0.1;Database=team30;User Id=root;Password=6u6fwn8S9";
+            //"server=localhost;user=team30;database=team30;port=3306;password=0030"
+
             connection = new MySqlConnection(connectionString);
             try
             {

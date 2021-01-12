@@ -1,0 +1,140 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Search Page</title>
+    <link rel="icon" href="lib/lamp.png">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="css/search.css" rel="stylesheet" media="all">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
+    <script src="js/nav_functions.js"></script>
+    <script src="js/search.js"></script>
+
+</head>
+<body onload="start()">
+    <!-- NAV BAR-->
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#"></a>
+            </div>
+            <div class="collapse navbar-collapse" id="myNavbar">
+                <ul class="nav navbar-nav">
+                    <li><a href="#" onclick="open_home_page()">Home</a></li>
+                    <li><a href="#" onclick="open_tests_menu_page()">Tests</a></li>
+                    <li class="active"><a href="#" onclick="open_ask_us_page()">Search</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#" onclick="open_profile_page()"><span class="glyphicon glyphicon-user"></span> Profile</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div>
+        <!-- Header -->
+        <div class="w3-display-container w3-content w3-hide-small" style="max-width:1500px">
+            <img class="w3-image" src="lib/search_bg.png" width="100%" height="100%">
+            <div class="w3-display-middle" style="width:65%">
+                <div class="w3-bar w3-black">
+                    <button class="w3-bar-item w3-button tablink" onclick="openLink(event, 'Filter');"><i class="zmdi zmdi-search"></i>Filter</button>
+                    <button class="w3-bar-item w3-button tablink" onclick="openLink(event, 'Best_Athlete');"><i class="zmdi zmdi-run"></i>Best Athlete</button>
+                    <button class="w3-bar-item w3-button tablink" onclick="openLink(event, 'Locations');"><i class="zmdi zmdi-globe"></i>Locations</button>
+                    <button class="w3-bar-item w3-button tablink" onclick="openLink(event, 'TheMost');"><i class="zmdi zmdi-fire"></i>The Most</button>
+                    <button class="w3-bar-item w3-button tablink" onclick="openLink(event, 'Medal');"><i class="zmdi zmdi-star"></i></i>Medal Winners</button>
+
+
+                </div>
+                <!-- Tabs -->
+                <div id="Filter" class="w3-container w3-white w3-padding-16 myLink">
+                    <p><button class="w3-button w3-light-grey" onclick="resetSelects()">Reset Search</button></p>
+                    <h3>Filter</h3>
+                    <div id="atributes">
+                        <select id="Search" onchange="rightMenu(this)" required>
+                            <option value="">I want to see..</option>
+                            <option value="Athletes">Athletes</option>
+                            <option value="Events">Sport Events</option>
+                        </select>
+                        <div id="dynamicAtr"></div>
+                    </div>
+                    <p><button class="w3-button w3-dark-grey" onclick="getAtrToSearch()">Search and find</button></p>
+                    <div class="spinner-border center" id="loader" style="visibility:hidden;"></div>
+                    <ul dir="ltr" class="w3-tag w3-deep-orange answer data-mdb-perefect-scrollbar overflow-auto" id="answer_filter"></ul>
+                </div>
+                <div id="Best_Athlete" class="w3-container w3-white w3-padding-16 myLink">
+                    <p><button class="w3-button w3-light-grey" onclick="resetSelects()">Reset Search</button></p>
+                    <h3>Find the best athlete</h3>
+                    <p>Choose a field of sport.</p>
+                    <select class="Select_Sport" id="BestAthleteSelect">
+                        <option selected value="base">Select Sport</option>
+                    </select>
+                    <p><button class="w3-button w3-dark-grey" onclick="findBestAthlete()">Find!</button></p>
+                    <span class="w3-tag w3-deep-orange answer" id="answer_athlete"></span>
+                </div>
+
+                <div id="Locations" class="w3-container w3-white w3-padding-16 myLink">
+                    <p><button class="w3-button w3-light-grey" onclick="resetSelects()">Reset Search</button></p>
+                    <h3>Find Games Location</h3>
+                    <p>Choose a game.</p>
+                    <select id="Select_Game">
+                        <option selected value="base">Select Game</option>
+                    </select>
+                    <p><button class="w3-button w3-dark-grey" onclick="findLocation()">Find!</button></p>
+                    <span class="w3-tag w3-deep-orange answer" id="answer_location"></span>
+                </div>
+                <div id="TheMost" class="w3-container w3-white w3-padding-16 myLink">
+                    <p><button class="w3-button w3-light-grey" onclick="resetSelects()">Reset Search</button></p>
+                    <h3>Find Some Intresting Facts</h3>
+                    <p>Choose a sport and a fact and see the results.</p>
+                    <select class="Select_Sport" id="MostSport">
+                        <option selected value="">Choose Sport</option>
+                    </select>
+                    <select id="Fact">
+                        <option value="">Choose Fact</option>
+                        <option value="Height DESC">Tallest Athlete</option>
+                        <option value="Height ASC">Shortest Athlete</option>
+                        <option value="Weight DESC">Heaviest Athlete</option>
+                        <option value="Weight ASC">Leanest Athlete</option>
+                    </select>
+                    <p><button class="w3-button w3-dark-grey" onclick="getThefact()">Find!</button></p>
+                    <div class="spinner-border center" id="loader_most" style="visibility:hidden;"></div>
+                    <span class="w3-tag w3-deep-orange answer" id="answer_most"></span>
+                </div>
+                <div id="Medal" class="w3-container w3-white w3-padding-16 myLink">
+                    <p><button class="w3-button w3-light-grey" onclick="resetSelects()">Reset Search</button></p>
+                    <h3>Find Medal Winners!</h3>
+                    <p>Choose a sport and medal.</p>
+                    <select class="Select_Sport" id="MedalSport">
+                        <option selected value="">Choose Sport</option>
+                    </select>
+                    <select id="MedalSelect">
+                        <option value="">Choose Medal</option>
+                        <option value="='Gold'">Gold</option>
+                        <option value="='Silver'">Silver</option>
+                        <option value="='Bronze'"> Bronze</option>
+                    </select>
+                    <p>optional:</p>
+                    <select id="SexMedal">
+                        <option value="">Choose Sex</option>
+                        <option value="='M'">Male</option>
+                        <option value="='F'">Female</option>
+                    </select>
+                    <p><button class="w3-button w3-dark-grey" onclick="getTheMedal()">Find!</button></p>
+                    <ul dir="ltr" class="w3-tag w3-deep-orange answer" id="answer_medal"></ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
